@@ -1,0 +1,24 @@
+{
+  "name": "glowing-pumpkin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "lodash": "^2.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dgellow/glowing-pumpkin.git"
+  },
+  "author": "Samuel El-Borai <samuel.elborai@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dgellow/glowing-pumpkin/issues"
+  },
+  "homepage": "https://github.com/dgellow/glowing-pumpkin"
+}
