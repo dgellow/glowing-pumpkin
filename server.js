@@ -61,9 +61,9 @@ function condHasAttr(connection, obj, attributes, fnTrue, fnFalse) {
         if (typeof fnFalse === 'function') {
             return fnFalse(connection, obj, attributes);
         }
+    } else {
+        return fnTrue(connection, obj, attributes);
     }
-
-    return fnTrue(connection, obj, attributes);
 }
 
 
@@ -77,7 +77,7 @@ function handleAuthentication(data, connection) {
         return (data.action === 'new:user') ?
             createUser(data, conn) :
             authenticate(data, conn);
-    }, connection);
+    });
 }
 
 function createUser(connection, data) {
