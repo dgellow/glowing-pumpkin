@@ -3,6 +3,12 @@ var net = require('net');
 var uuid = require('node-uuid');
 var util = require('util');
 
+var helpers = require('./helpers');
+var log = helpers.log;
+var wrapText = helpers.wrapText;
+var parse = helpers.parse;
+var condHasAttr = helpers.condHasAttr;
+
 var User = require('./User');
 var Connection = require('./Connection');
 var Pool = require('./Pool');
@@ -43,50 +49,6 @@ function matchMaking() {
             }
         });
     }, 1000);
-}
-
-function log(str) {
-    str = str || '';
-    console.log(wrapText(str));
-}
-
-function wrapText(str) {
-    return Date.now() + ': ' + str + '\r\n';
-}
-
-function parse(data) {
-    var jsonData;
-    try {
-        jsonData = JSON.parse(data);
-    } catch(err) {
-        console.log('!! Exception: ' + util.inspect(err));
-        jsonData = {};
-    } finally {
-        return jsonData;
-    }
-}
-
-function condHasAttr(connection, obj, attributes, fnTrue, fnFalse) {
-    var hasEveryAttr = _.chain(attributes)
-        .map(function(attr) {
-            return _.has(obj, attr);
-        })
-        .every()
-        .value();
-
-    if (!hasEveryAttr) {
-        connection.socket.write(JSON.stringify({
-            status: 'error',
-            message: 'Error: Received object has no ' +
-                util.inspect(attributes) +
-                ' attribute'
-        }) + '\r\n');
-        if (typeof fnFalse === 'function') {
-            return fnFalse(connection, obj, attributes);
-        }
-    } else {
-        return fnTrue(connection, obj, attributes);
-    }
 }
 
 
