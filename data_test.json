@@ -1,7 +1,10 @@
 {
     "Users": [
-        {"uuid": 0, "name": "andré"},
-        {"uuid": 1, "name": "sam"}
+        {"id": 0, "name": "andré",
+         "characters": ["pikatchoum", "noctopia"],
+         "level": 10, "money": 4500, "history": [{"timestamp": "1412019459653", "result": "loss", "opponent": {"id": 1, "name": "sam"}}]},
+        {"id": 1, "name": "sam",
+         "characters": ["jack'o'lantern", "pumpKING"],
+         "level": 2, "money": 1370, "history": [{"timestamp": "1412019459653", "result": "win", "opponent": {"id": 0, "name": "andré"}}]}
     ]
-
 }

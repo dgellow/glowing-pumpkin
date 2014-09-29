@@ -1,16 +1,27 @@
 var _ = require('lodash');
 var net = require('net');
+var uuid = require('node-uuid');
+var util = require('util');
 
-var users = require('./data_test.json').Users;
+var User = require('./User');
+var Connection = require('./Connection');
+var Pool = require('./Pool');
 
-var poolSearchingMatch = [];
-var poolGames = [];
-var allPools = [poolSearchingMatch, poolGames];
+var poolSearchingGame = new Pool('searchGame');
+var poolCurrentGames = new Pool('currentGames');
+var poolLobbies = new Pool('lobbies');
 
 var actions = {
-    'search:match': searchMatch,
+    'initiate:search:game': initiateSearchGame,
+    'interrupt:search:game': interruptSearchGame,
+    'enter:lobby': enterLobby,
+    'leave:lobby': leaveLobby,
+    'enter:game': enterGame,
+    'leave:game': leaveGame,
 };
 
+
+// Helper functions
 function log(str) {
     str = str || '';
     console.log(wrapText(str));
@@ -23,74 +34,131 @@ function wrapText(str) {
 function parse(data) {
     var jsonData;
     try {
-        jsonData = parse(data);
+        jsonData = JSON.parse(data);
     } catch(err) {
-        console.log('!! Exception: ' + JSON.stringify(err));
+        console.log('!! Exception: ' + util.inspect(err));
         jsonData = {};
     } finally {
         return jsonData;
     }
 }
 
-function isAllowed(data) {
-    var jsonData = parse(data);
-    return (jsonData &&
-            jsonData.user &&
-            _.findWhere(users, {name: jsonData.user})) ?
-        jsonData :
-        false;
-}
+function condHasAttr(connection, obj, attributes, fnTrue, fnFalse) {
+    var hasEveryAttr = _.chain(attributes)
+        .map(function(attr) {
+            return _.has(obj, attr);
+        })
+        .every()
+        .value();
 
-function moveToPool(userId, destPoolId) {
-    // select every pools but the targeted one
-    var poolsToClean = _.reject(allPools, function(pool) {
-        return pool.uuid === destPoolId;
-    });
-
-    // remove user from other pools
-    _.each(poolsToClean, function(pool) {
-        pool = _.without(pool, userId);
-    });
-
-    // add user to destPool
-    var destPool = _.findWhere(allPools, {uuid: destPoolId});
-    destPool.push(userId);
-}
-
-function route(data, socket) {
-    if (!_.has(data, 'action')) {
-        socket.write('Error: Received object has no [action] attribute');
-        return;
-    }
-
-    actions[data.action](data);
-}
-
-function searchMatch(data) {
-    if ((user = _.findWhere(users, {name: data.user}))) {
-        poolSearchingMatch.push(user.uuid);
-    } else {
-        log('Error: user [' + data.user + '] cannot be found');
-    }
-}
-
-function main(socket) {
-    socket.on('data', function(data) {
-        if ((jsonData = isAllowed(data))) {
-            route(jsonData, socket);
+    if (!hasEveryAttr) {
+        connection.socket.write(JSON.stringify({
+            status: 'error',
+            message: 'Error: Received object has no [' +
+                util.inspect(attributes) +
+                '] attribute'
+        }));
+        if (typeof fnFalse === 'function') {
+            return fnFalse(connection, obj, attributes);
         }
-        log('Users: ' + JSON.stringify(users));
-        log('Pools: ' + JSON.stringify(allPools));
+    }
+
+    return fnTrue(connection, obj, attributes);
+}
+
+
+// Manage authentication and creation of new user
+function isAuthenticated(connection) {
+    return !!connection.user;
+}
+
+function handleAuthentication(data, connection) {
+    return condHasAttr(connection, data, ['user', 'action'], function(data, conn) {
+        return (data.action === 'new:user') ?
+            createUser(data, conn) :
+            authenticate(data, conn);
+    }, connection);
+}
+
+function createUser(connection, data) {
+    connection.user = User.create(data.user.id, data.user.name);
+}
+
+function authenticate(connection, data) {
+    var user = User.fetch(data.user.id);
+    if (!user) {
+        connection.socket.write(wrapText(
+            'Error: User with id [' + data.user.id + '] not found'
+        ));
+    } else {
+        connection.user = user;
+        connection.socket.write(wrapText('User: ' + util.inspect(user)));
+    }
+}
+
+
+// Routing, dispatch data received from a client between actions
+function route(data, connection) {
+    condHasAttr(connection, data, ['action'], function(data) {
+        actions[data.action](connection, data);
+    });
+}
+
+
+// Actions
+function initiateSearchGame(conn, data) {
+    poolSearchingGame.push(conn.user);
+}
+
+function interruptSearchGame(conn, data) {
+    poolSearchingGame.remove(conn.user);
+}
+
+function enterLobby(conn, data) {
+    poolLobbies.push(conn.user);
+}
+
+function leaveLobby(conn, data) {
+    poolLobbies.remove(conn.user);
+}
+
+function enterGame(conn, data) {
+    poolCurrentGames.push(conn.user);
+}
+
+function leaveGame(conn, data) {
+    poolCurrentGames.remove(conn.user);
+}
+
+
+// Main function, run everytime a connection has been initiated
+function main(socket) {
+    var connection = new Connection(socket);
+
+    socket.on('data', function(rawData) {
+        var jsonData = parse(rawData);
+
+        if (!isAuthenticated(connection)) {
+            handleAuthentication(jsonData, connection);
+        } else {
+            route(jsonData, connection);
+        }
+
+        log('Users: ' + util.inspect(User.getAll()));
+        log('Pools: ' + util.inspect(Pool.getAll()));
+        log('Sockets: ' + util.inspect(Connection.getAll()));
     });
 
     socket.on('end', function() {
+        connection.close();
         log('server disconnected');
     });
 
-    log('server connected');
     socket.write(wrapText('hello'));
 }
 
+
+// Run the server
 var server = net.createServer(main);
 server.listen(1337, function() {
     log('server bound');
