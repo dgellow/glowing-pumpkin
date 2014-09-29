@@ -54,10 +54,10 @@ function condHasAttr(connection, obj, attributes, fnTrue, fnFalse) {
     if (!hasEveryAttr) {
         connection.socket.write(JSON.stringify({
             status: 'error',
-            message: 'Error: Received object has no [' +
+            message: 'Error: Received object has no ' +
                 util.inspect(attributes) +
-                '] attribute'
-        }));
+                ' attribute'
+        }) + '\r\n');
         if (typeof fnFalse === 'function') {
             return fnFalse(connection, obj, attributes);
         }
@@ -99,8 +99,17 @@ function authenticate(connection, data) {
 
 // Routing, dispatch data received from a client between actions
 function route(data, connection) {
-    condHasAttr(connection, data, ['action'], function(data) {
-        actions[data.action](connection, data);
+    condHasAttr(connection, data, ['action'], function(_conn, data) {
+        if (_.has(actions, data.action)) {
+            actions[data.action](connection, data);
+        } else {
+            connection.socket.write(JSON.stringify({
+                status: 'error',
+                message: 'Error: The action ' +
+                    util.inspect(data.action) +
+                    ' is not managed'
+            }) + '\r\n');
+        }
     });
 }
 
