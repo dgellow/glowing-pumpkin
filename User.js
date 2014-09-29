@@ -13,7 +13,7 @@ User.create = function(id, name) {
     return user;
 };
 
-User.fetch = function(id) {
+User.getById = function(id) {
     return _.findWhere(_users, {id: id});
 };
 

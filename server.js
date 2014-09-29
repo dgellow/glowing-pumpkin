@@ -20,8 +20,31 @@ var actions = {
     'leave:game': leaveGame,
 };
 
-
 // Helper functions
+function matchMaking() {
+    return setInterval(function() {
+        if (poolSearchingGame.users.length < 2) {
+            return;
+        }
+
+        var opponents = _.take(poolSearchingGame.users, 2);
+        _.each(opponents, function(userId, index) {
+            poolLobbies.push(userId);
+            var connection = Connection.getByUser(userId);
+            var otherUserId = opponents[(index) ? 0 : 1];
+            var otherUser = User.getById(otherUserId);
+
+            if (otherUser && connection) {
+                connection.socket.write(wrapText(
+                    'Found opponent: ' + util.inspect(otherUser)
+                ));
+                log('Search games: ' + util.inspect(poolSearchingGame));
+                log('Lobbies: ' + util.inspect(poolLobbies));
+            }
+        });
+    }, 1000);
+}
+
 function log(str) {
     str = str || '';
     console.log(wrapText(str));
@@ -85,7 +108,7 @@ function createUser(connection, data) {
 }
 
 function authenticate(connection, data) {
-    var user = User.fetch(data.user.id);
+    var user = User.getById(data.user.id);
     if (!user) {
         connection.socket.write(wrapText(
             'Error: User with id [' + data.user.id + '] not found'
@@ -172,3 +195,6 @@ var server = net.createServer(main);
 server.listen(1337, function() {
     log('server bound');
 });
+
+// Run the matchmaking logic
+matchMaking();
