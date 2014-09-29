@@ -17,6 +17,8 @@ var poolSearchingGame = new Pool('searchGame');
 var poolCurrentGames = new Pool('currentGames');
 var poolLobbies = new Pool('lobbies');
 
+var matchMaking = require('./MatchMaking');
+
 var actions = {
     'initiate:search:game': initiateSearchGame,
     'interrupt:search:game': interruptSearchGame,
@@ -25,31 +27,6 @@ var actions = {
     'enter:game': enterGame,
     'leave:game': leaveGame,
 };
-
-// Helper functions
-function matchMaking() {
-    return setInterval(function() {
-        if (poolSearchingGame.users.length < 2) {
-            return;
-        }
-
-        var opponents = _.take(poolSearchingGame.users, 2);
-        _.each(opponents, function(userId, index) {
-            poolLobbies.push(userId);
-            var connection = Connection.getByUser(userId);
-            var otherUserId = opponents[(index) ? 0 : 1];
-            var otherUser = User.getById(otherUserId);
-
-            if (otherUser && connection) {
-                connection.socket.write(wrapText(
-                    'Found opponent: ' + util.inspect(otherUser)
-                ));
-                log('Search games: ' + util.inspect(poolSearchingGame));
-                log('Lobbies: ' + util.inspect(poolLobbies));
-            }
-        });
-    }, 1000);
-}
 
 
 // Manage authentication and creation of new user
@@ -158,5 +135,5 @@ server.listen(1337, function() {
     log('server bound');
 });
 
-// Run the matchmaking logic
-matchMaking();
+// Run the matchmaking logic, every 1s
+matchMaking(1000);
