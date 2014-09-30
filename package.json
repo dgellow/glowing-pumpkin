@@ -5,7 +5,8 @@
   "main": "server.js",
   "dependencies": {
     "lodash": "^2.4.1",
-    "sqlite3": "^3.0.2"
+    "sqlite3": "^3.0.2",
+    "node-uuid": "^1.4.1"
   },
   "devDependencies": {},
   "scripts": {
