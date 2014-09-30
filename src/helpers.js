@@ -16,7 +16,7 @@ function parse(data) {
     try {
         jsonData = JSON.parse(data);
     } catch(err) {
-        console.log('!! Exception: ' + util.inspect(err));
+        log('!! Exception: ' + util.inspect(err));
         jsonData = {};
     } finally {
         return jsonData;

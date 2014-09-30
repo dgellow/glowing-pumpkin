@@ -21,13 +21,13 @@ npm install
 Run the server
 
 ```
-node server.js
+node init.js
 ```
 
 or in debug mode
 
 ```
-node debug server.js
+node debug init.js
 ```
 
 Connect as a client via telnet

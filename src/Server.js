@@ -111,7 +111,9 @@ function main(socket) {
 
         if (!isAuthenticated(connection)) {
             handleAuthentication(jsonData, connection);
-        } else {
+        }
+
+        if (isAuthenticated(connection)) {
             route(jsonData, connection);
         }
 
@@ -129,11 +131,27 @@ function main(socket) {
 }
 
 
-// Run the server
-var server = net.createServer(main);
-server.listen(1337, function() {
-    log('server bound');
-});
+var Server = function(port) {
+    this.port = port || 1337;
+};
 
-// Run the matchmaking logic, every 1s
-matchMaking(1000);
+Server.prototype = Object.create(null);
+Server.prototype.constructor = Server;
+
+Server.prototype.run = function() {
+    try {
+        // Run the server
+        this.tcpServer = net.createServer(main);
+        this.tcpServer.listen(this.port, function() {
+            log('server bound');
+        });
+
+        // Run the matchmaking logic, every 1s
+        matchMaking(1000);
+    } catch(err) {
+        log('!! Exception: ' + util.inspect(err));
+        delete this.tcpServer;
+    }
+};
+
+module.exports = Server;

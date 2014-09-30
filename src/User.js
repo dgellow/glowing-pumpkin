@@ -1,5 +1,5 @@
 var _ = require('lodash');
-var _users = require('./data_test.json').Users;
+var _users = require('../data/data_test.json').Users;
 var allUsers;
 
 var User = function(id, name) {
