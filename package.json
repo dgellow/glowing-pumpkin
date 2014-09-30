@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "dependencies": {
-    "lodash": "^2.4.1"
+    "lodash": "^2.4.1",
+    "sqlite3": "^3.0.2"
   },
   "devDependencies": {},
   "scripts": {
