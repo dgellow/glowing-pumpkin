@@ -23,6 +23,18 @@ function parse(data) {
     }
 }
 
+function stringify(obj) {
+    var strData;
+    try {
+        strData = JSON.stringify(obj);
+    } catch(err) {
+        log('!! Exception: ' + util.inspect(err));
+        strData = "";
+    } finally {
+        return strData;
+    }
+}
+
 function condHasAttr(connection, obj, attributes, fnTrue, fnFalse) {
     var hasEveryAttr = _.chain(attributes)
         .map(function(attr) {
@@ -32,7 +44,7 @@ function condHasAttr(connection, obj, attributes, fnTrue, fnFalse) {
         .value();
 
     if (!hasEveryAttr) {
-        connection.socket.write(JSON.stringify({
+        connection.socket.write(stringify({
             status: 'error',
             message: 'Error: Received object has no ' +
                 util.inspect(attributes) +
@@ -50,5 +62,6 @@ module.exports = {
     log: log,
     wrapText: wrapText,
     parse: parse,
+    stringify: stringify,
     condHasAttr: condHasAttr
 };

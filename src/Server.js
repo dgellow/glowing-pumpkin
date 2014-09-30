@@ -7,6 +7,7 @@ var helpers = require('./helpers');
 var log = helpers.log;
 var wrapText = helpers.wrapText;
 var parse = helpers.parse;
+var stringify = helpers.stringify;
 var condHasAttr = helpers.condHasAttr;
 
 var User = require('./User');
@@ -105,6 +106,7 @@ function leaveGame(conn, data) {
 // Main function, run everytime a connection has been initiated
 function main(socket) {
     var connection = new Connection(socket);
+    socket.write(stringify({status: 'okay', value: 'connected'}));
 
     socket.on('data', function(rawData) {
         var jsonData = parse(rawData);
@@ -126,8 +128,6 @@ function main(socket) {
         connection.close();
         log('server disconnected');
     });
-
-    socket.write(wrapText('hello'));
 }
 
 
