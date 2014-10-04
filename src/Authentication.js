@@ -32,6 +32,10 @@ function handleAuthentication(connection, data) {
 function createUser(connection, data) {
     if (data.value.id && data.value.name) {
         connection.user = User.create(data.value.id, data.value.name);
+
+        connection.socket.write(stringify({
+            status: 'success'
+        }));
     } else {
         connection.socket.write(stringify({
             status: 'error',
@@ -44,6 +48,10 @@ function authenticate(connection, data) {
     var user = User.getById(data.value.id);
     if (user) {
         connection.user = user;
+
+        connection.socket.write(stringify({
+            status: 'success'
+        }));
     } else {
         connection.socket.write(stringify({
             status: 'error',
