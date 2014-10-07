@@ -1,14 +1,11 @@
 var net = require('net');
 var util = require('util');
 var uuid = require('node-uuid');
+var Q = require('q');
 
 var helpers = require('./src/helpers');
 var log = helpers.log;
 var parse = helpers.parse;
-
-var User = require('./src/User');
-
-var clientId = uuid.v4();
 
 // Helpers
 function printClientLog(str) {
@@ -29,24 +26,30 @@ function clientWrite(obj) {
     client.write(str);
 }
 
-function delay(duration, obj, fnNames) {
-    fnNames.forEach(function(fnName, index) {
-        setTimeout(function() {
-            obj[fnName]();
-        }, index * duration);
-    });
+function delay(fn) {
+    var deferred = Q.defer();
+    setTimeout(function() {
+        deferred.resolve(fn());
+    }, 2000);
+    return deferred.promise;
 }
 
 // connect to the server
 var client = net.connect({port: 1337, host: 'localhost'}, function() {
     printClientLog('client connected');
 
+    var cl = goodClient;
+
     var steps = ['authenticate',
                  'searchForAGame',
                  'stopSearch',
                  'close'];
 
-    delay(2000, goodClient, steps);
+    steps.reduce(function(acc, c){
+        return acc.then(function(){
+            return delay(cl[c]);
+        });
+    }, Q());
 });
 
 client.on('data', function(data) {
@@ -102,6 +105,10 @@ var badClient = {
                    action: 'authenticate:user',
                    value: {id: userId, name: 'roger'}};
         clientWrite(obj);
+
+        // and we make an action whithout being auhtenticated,
+        // an error should be returned
+        goodClient.searchForAGame();
 
         // then correct authentication to run next fns
         goodClient.authenticate();
