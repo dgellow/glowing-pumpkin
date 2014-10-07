@@ -1,4 +1,9 @@
 var _ = require('lodash');
+var Q = require('q');
+
+var db = require('./Database');
+var dbUsers = new db('users');
+
 var _users = require('../data/data_test.json').Users;
 var allUsers;
 
@@ -8,25 +13,32 @@ var User = function(id, name) {
 };
 
 User.create = function(id, name) {
-    var user = new User(id, name);
-    allUsers.push(user);
-    return user;
+    return dbUsers.insert({id: id, name: name}, id)
+        .then(function(user) {
+            return new User(user.id, name);
+        });
 };
 
 User.getById = function(id) {
-    return _.findWhere(_users, {id: id});
+    return dbUsers.getById(id)
+        .then(function(user) {
+            return new User(user.id, user.name);
+        });
 };
 
 User.getAll = function() {
-    return allUsers;
+    return dbUsers.getAll().then(function(users) {
+        return _.map(users, function(user) {
+            return new User(user.id, user.name);
+        });
+    });
 };
 
 User.prototype = Object.create(null);
 User.prototype.constructor = User;
 
-
-allUsers = _.map(_users, function(user) {
-    return new User(user.id, user.name);
-});
+User.prototype.save = function() {
+    return dbUsers.save(this);
+};
 
 module.exports = User;
