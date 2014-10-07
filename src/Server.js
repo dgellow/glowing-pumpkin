@@ -10,7 +10,6 @@ var parse = helpers.parse;
 var stringify = helpers.stringify;
 var condHasAttr = helpers.condHasAttr;
 
-var User = require('./User');
 var Connection = require('./Connection');
 var Pool = require('./Pool');
 var Auth = require('./Authentication');
