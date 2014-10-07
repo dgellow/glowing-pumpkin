@@ -1,5 +1,10 @@
 var usersConfig = {
     views: {
+        all :{
+            map: function(doc) {
+                return emit(doc._id, doc);
+            }
+        },
         noobs: {
             map: function(doc) {
                 if (doc.level && doc.level < 5) {
@@ -19,15 +24,33 @@ var usersConfig = {
 };
 
 var charactersConfig = {
-    views: {}
+    views: {
+        all :{
+            map: function(doc) {
+                return emit(doc._id, doc);
+            }
+        }
+    }
 };
 
 var objectsConfig = {
-    views: {}
+    views: {
+        all :{
+            map: function(doc) {
+                return emit(doc._id, doc);
+            }
+        }
+    }
 };
 
 var skillsConfg = {
-    views: {}
+    views: {
+        all :{
+            map: function(doc) {
+                return emit(doc._id, doc);
+            }
+        }
+    }
 };
 
 module.exports = {

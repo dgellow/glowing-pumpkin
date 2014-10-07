@@ -45,11 +45,15 @@ Database.prototype.constructor = Database;
 
 Database.prototype.getAll = function() {
     var deferred = Q.defer();
-    this.scope.list(function(err, results) {
+    this.scope.view(this.name, 'all', function(err, results) {
         if (err) {
             deferred.reject(new CouchDBException(err.reason));
+        } else if (results && !results.rows){
+            deferred.reject(new CouchDBException(
+                'Returned object has no [rows] attribute'
+            ));
         } else {
-            deferred.resolve(results);
+            deferred.resolve(_.pluck(results.rows, 'value'));
         }
     });
     return deferred.promise;
