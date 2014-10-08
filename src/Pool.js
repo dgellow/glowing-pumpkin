@@ -26,14 +26,14 @@ Pool.prototype.add = function(userId) {
 };
 
 Pool.prototype.remove = function(user) {
-    var userId = (typeof user === 'number') ? user : user.id;
+    var userId = (typeof user === 'string') ? user : user.id;
     return _.remove(this.users, function(id) {
         return id == userId;
     });
 };
 
 Pool.prototype.push = function(user) {
-    var userId = (typeof user === 'number') ? user : user.id;
+    var userId = (typeof user === 'string') ? user : user.id;
 
     var otherPools = _.reject(allPools, function(pool) {
         return pool.id === this.id;
