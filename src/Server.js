@@ -35,9 +35,9 @@ function main(socket) {
             Router.route(connection, jsonData);
         }
 
-        log('Users: ' + util.inspect(User.getAll()));
-        log('Pools: ' + util.inspect(Pool.getAll()));
-        log('Sockets: ' + util.inspect(Connection.getAll()));
+        log('rawData: ' + rawData);
+        log('Pools  : ' + util.inspect(Pool.getAll()));
+        log('Connections  : ' + util.inspect(Connection.getAll()));
     });
 
     socket.on('end', function() {
