@@ -40,10 +40,10 @@ var client = net.connect({port: 1337, host: 'localhost'}, function() {
 
     var cl = goodClient;
 
-    var steps = ['authenticate',
-                 'searchForAGame',
-                 'stopSearch',
-                 'close'];
+    var steps = [
+        'authenticate',
+        'searchForAGame'
+    ];
 
     steps.reduce(function(acc, c){
         return acc.then(function(){
@@ -70,7 +70,7 @@ var goodClient = {
     authenticate: function () {
         var userId = uuid.v4();
         var obj = {timestamp: Date.now(),
-                   action: 'create:user',
+                   action: 'authenticate:user',
                    value: {id: userId, name: 'roger'}};
         clientWrite(obj);
     },
