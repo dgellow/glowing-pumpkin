@@ -7,7 +7,7 @@ var Pool = require('./Pool');
 
 var helpers = require('./helpers');
 var log = helpers.log;
-var wrapText = helpers.wrapText;
+var stringify = helpers.stringify;
 
 function matchMaking(delay) {
     var poolSearch = Pool.getByLabel('searchGame');
@@ -25,12 +25,19 @@ function matchMaking(delay) {
             var otherUserId = opponents[(index) ? 0 : 1];
             var otherUser = User.getById(otherUserId);
 
-            if (otherUser && connection) {
-                connection.socket.write(wrapText({
-                    status: 'success',
-                    opponent: otherUser
-                }));
-            }
+            User.getById(otherUserId)
+                .then(function(otherUser) {
+                    connection.socket.write(stringify({
+                        status: 'success',
+                        opponent: otherUser
+                    }));
+                })
+                .catch(function(err) {
+                    connection.socket.write(stringify({
+                        status: 'error',
+                        message: err.name + ': ' + err.message
+                    }));
+                }).done();
         });
 
         log('Search games: ' + util.inspect(poolSearch));
