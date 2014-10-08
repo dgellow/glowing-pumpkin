@@ -26,9 +26,10 @@ function matchMaking(delay) {
             var otherUser = User.getById(otherUserId);
 
             if (otherUser && connection) {
-                connection.socket.write(wrapText(
-                    'Found opponent: ' + util.inspect(otherUser)
-                ));
+                connection.socket.write(wrapText({
+                    status: 'success',
+                    opponent: otherUser
+                }));
             }
         });
 
