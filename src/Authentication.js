@@ -8,15 +8,14 @@ var stringify = helpers.stringify;
 var User = require('./User');
 
 var actions = {
-    'authenticate:user': authenticate,
-    'create:user': createUser
+    'authenticate:user': handleAuthentication
 };
 
 function isAuthenticated(connection) {
     return !!connection.user;
 }
 
-function handleAuthentication(connection, data) {
+function process(connection, data) {
     if (_.has(actions, data.action)) {
         actions[data.action](connection, data);
     } else {
@@ -25,6 +24,25 @@ function handleAuthentication(connection, data) {
             message: 'User should be authenticated to make an action'
         }));
     }
+}
+
+function handleAuthentication(connection, data) {
+    doesUserExist(connection, data, authenticate, createUser);
+}
+
+function doesUserExist(connection, data, fnTrue, fnFalse) {
+    User.exists(data.value.id)
+        .then(function(hasBeenFound) {
+            return (hasBeenFound) ?
+                fnTrue(connection, data):
+                fnFalse(connection, data);
+        })
+        .catch(function(err) {
+            connection.socket.write(stringify({
+                status: 'error',
+                message: err.name + ': ' + err.message
+            }));
+        }).done();
 }
 
 function createUser(connection, data) {
@@ -68,6 +86,6 @@ function authenticate(connection, data) {
 
 module.exports = Object.create({
     isAuthenticated: isAuthenticated,
-    handleAuthentication: handleAuthentication,
+    process: process,
     actions: actions
 });

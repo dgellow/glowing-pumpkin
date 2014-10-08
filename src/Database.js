@@ -114,4 +114,18 @@ Database.prototype.save = function(obj) {
         });
 };
 
+Database.prototype.exists = function(documentId) {
+    var deferred = Q.defer();
+    this.scope.head(documentId, function(err, __result, headers) {
+        if (!err && headers['status-code'] == 200) {
+            deferred.resolve(true);
+        } else if (err && err['status-code'] == 404) {
+            deferred.resolve(false);
+        } else if (err) {
+            deferred.reject(new CouchDBException(err.reason));
+        }
+    });
+    return deferred.promise;
+};
+
 module.exports = Database;

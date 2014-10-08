@@ -24,13 +24,12 @@ var matchMaking = require('./MatchMaking');
 // Main function, run everytime a connection has been initiated
 function main(socket) {
     var connection = new Connection(socket);
-    socket.write(stringify({status: 'okay', value: 'connected'}));
 
     socket.on('data', function(rawData) {
         var jsonData = parse(rawData);
 
         if (!Auth.isAuthenticated(connection)) {
-            Auth.handleAuthentication(connection, jsonData);
+            Auth.process(connection, jsonData);
         } else {
             Router.route(connection, jsonData);
         }

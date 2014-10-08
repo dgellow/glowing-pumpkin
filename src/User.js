@@ -19,6 +19,10 @@ User.create = function(id, name) {
         });
 };
 
+User.exists = function(id) {
+    return dbUsers.exists(id);
+};
+
 User.getById = function(id) {
     return dbUsers.getById(id)
         .then(function(user) {
