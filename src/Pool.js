@@ -6,7 +6,6 @@ var allPools = [];
 var Pool = function(label) {
     this.id = uuid.v4();
     this.label = label || '';
-    this.users = [];
     allPools.push(this);
 };
 
@@ -21,31 +20,22 @@ Pool.getByLabel = function(label) {
 Pool.prototype = Object.create(null);
 Pool.prototype.constructor = Pool;
 
-Pool.prototype.add = function(userId) {
-    return this.users.push(userId);
+Pool.prototype.selectOtherPools = function() {
+    return _.reject(allPools, function(pool) {
+        return pool.id === this.id;
+    });
 };
 
-Pool.prototype.remove = function(user) {
-    var userId = (typeof user === 'string') ? user : user.id;
-    return _.remove(this.users, function(id) {
-        return id == userId;
-    });
+Pool.prototype.add = function(userId) {
+    throw new Error('Pool.add method should be overrided');
+};
+
+Pool.prototype.remove = function(userId) {
+    throw new Error('Pool.remove method should be overrided');
 };
 
 Pool.prototype.push = function(user) {
-    var userId = (typeof user === 'string') ? user : user.id;
-
-    var otherPools = _.reject(allPools, function(pool) {
-        return pool.id === this.id;
-    });
-
-    // remove user from other pools
-    _.each(otherPools, function(pool) {
-        pool.remove(userId);
-    });
-
-    // add user into this pool
-    this.add(userId);
+    throw new Error('Pool.push method should be overrided');
 };
 
 module.exports = Pool;

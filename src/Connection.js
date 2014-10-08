@@ -19,7 +19,8 @@ Connection.getById = function(id) {
     return _.findWhere(allConnections, {id: id});
 };
 
-Connection.getByUser = function(userId) {
+Connection.getByUser = function(user) {
+    var userId = (typeof user === 'string') ? user : user.id;
     var result = _.filter(allConnections, function(c) {
         return c.user.id == userId;
     });

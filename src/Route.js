@@ -18,11 +18,11 @@ var actions = {
 
 // Actions
 function initiateSearchGame(conn, data) {
-    Pool.getByLabel('searchGame').push(conn.user);
+    Pool.getByLabel('search').push(conn.user);
 }
 
 function interruptSearchGame(conn, data) {
-    Pool.getByLabel('searchGame').remove(conn.user);
+    Pool.getByLabel('search').remove(conn.user);
 }
 
 function enterLobby(conn, data) {
@@ -34,11 +34,11 @@ function leaveLobby(conn, data) {
 }
 
 function enterGame(conn, data) {
-    Pool.getByLabel('currentGames').push(conn.user);
+    Pool.getByLabel('games').push(conn.user);
 }
 
 function leaveGame(conn, data) {
-    Pool.getByLabel('currentGames').remove(conn.user);
+    Pool.getByLabel('games').remove(conn.user);
 }
 
 // Routing, dispatch data received from a client to the correct action

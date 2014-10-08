@@ -10,14 +10,18 @@ var parse = helpers.parse;
 var stringify = helpers.stringify;
 var condHasAttr = helpers.condHasAttr;
 
+var User = require('./User');
 var Connection = require('./Connection');
 var Pool = require('./Pool');
 var Auth = require('./Authentication');
 var Router = require('./Route');
 
-var poolSearchingGame = new Pool('searchGame');
-var poolCurrentGames = new Pool('currentGames');
-var poolLobbies = new Pool('lobbies');
+var PoolSearch = require('./PoolSearch');
+
+// Instanciate pools
+var PoolSearch = new (require('./PoolSearch'))();
+var PoolLobbies = new (require('./PoolLobbies'))();
+var PoolGames = new (require('./PoolGames'))();
 
 var matchMaking = require('./MatchMaking');
 
@@ -36,7 +40,8 @@ function main(socket) {
 
         log('rawData: ' + rawData);
         log('Pools  : ' + util.inspect(Pool.getAll()));
-        log('Connections  : ' + util.inspect(Connection.getAll()));
+        log('Users  : ' + util.inspect(_.pluck(Connection.getAll(),
+                                              'user')));
     });
 
     socket.on('end', function() {
@@ -66,6 +71,7 @@ Server.prototype.run = function() {
     } catch(err) {
         log('!! Exception: ' + util.inspect(err));
         delete this.tcpServer;
+        throw err;
     }
 };
 

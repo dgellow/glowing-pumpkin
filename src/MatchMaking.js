@@ -9,8 +9,9 @@ var helpers = require('./helpers');
 var log = helpers.log;
 var stringify = helpers.stringify;
 
+// poolSearch ----> take 2 users to create a lobby ----> move it in poolLobbies
 function matchMaking(delay) {
-    var poolSearch = Pool.getByLabel('searchGame');
+    var poolSearch = Pool.getByLabel('search');
     var poolLobbies = Pool.getByLabel('lobbies');
 
     return setInterval(function() {
@@ -18,9 +19,14 @@ function matchMaking(delay) {
             return;
         }
 
+        // take 2 users to create a lobby (an [] of users)
         var opponents = _.take(poolSearch.users, 2);
+
+        // move them in poolLobbies
+        poolLobbies.push(opponents);
+
+        // notify users
         _.each(opponents, function(userId, index) {
-            poolLobbies.push(userId);
             var connection = Connection.getByUser(userId);
             var otherUserId = opponents[(index) ? 0 : 1];
             var otherUser = User.getById(otherUserId);
