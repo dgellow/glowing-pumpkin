@@ -7,10 +7,10 @@ var helpers = require('./helpers');
 var log = helpers.log;
 
 var actions = {
-    'set:creatures': setCreatures
+    'set:characters': setCharacters
 };
 
-function setCreatures(conn, data) {
+function setCharacters(conn, data) {
     var lobby = Pool.getByLabel('lobbies').getByUser(conn.user.id);
     _.each(lobby, function(player) {
         if(player.id === conn.user.id) {
