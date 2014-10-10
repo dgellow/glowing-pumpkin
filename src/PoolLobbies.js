@@ -2,6 +2,11 @@ var _ = require('lodash');
 
 var Pool = require('./Pool');
 
+
+// a lobby is an array containing UserInLobby objects
+// [{color: 'red', ready: true, id: 'uuid-user1', name: 'sam le brave'},
+//  {ready: 'pink', ready: null, id: 'uuid-user2', name: 'andré du 1018'}]
+
 var PoolLobbies = function() {
     Pool.call(this, 'lobbies');
     this.lobbies = [];
@@ -20,7 +25,6 @@ PoolLobbies.prototype.remove = function(userId) {
     });
 };
 
-// a lobby is an [] like object containing userIds
 PoolLobbies.prototype.push = function(lobby) {
     var otherPools = this.selectOtherPools();
 
