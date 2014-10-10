@@ -9,7 +9,7 @@ var helpers = require('./helpers');
 var log = helpers.log;
 var stringify = helpers.stringify;
 
-// poolSearch ----> take 2 users to create a lobby ----> move it in poolLobbies
+// poolSearch ----> take 2 users to create a lobby ----> move the lobby in poolLobbies
 function matchMaking(delay) {
     var poolSearch = Pool.getByLabel('search');
     var poolLobbies = Pool.getByLabel('lobbies');
@@ -19,16 +19,21 @@ function matchMaking(delay) {
             return;
         }
 
-        // take 2 users to create a lobby (an [] of users)
-        var opponents = _.take(poolSearch.users, 2);
+        // take 2 users and create a lobby
+        var lobby = _.chain(poolSearch.users)
+            .take(2)
+            .map(function(player) {
+                return _.extend(player, {ready: null, characters: []});
+            })
+            .value();
 
         // move them in poolLobbies
-        poolLobbies.push(opponents);
+        poolLobbies.push(lobby);
 
         // notify users
-        _.each(opponents, function(userId, index) {
+        _.each(lobby, function(userId, index) {
             var connection = Connection.getByUser(userId);
-            var otherUserId = opponents[(index) ? 0 : 1];
+            var otherUserId = lobby[(index) ? 0 : 1];
             var otherUser = User.getById(otherUserId);
 
             User.getById(otherUserId)
