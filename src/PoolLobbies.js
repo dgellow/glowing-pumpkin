@@ -40,4 +40,12 @@ PoolLobbies.prototype.push = function(lobby) {
     this.add(lobby);
 };
 
+PoolLobbies.prototype.getByUser = function(userId) {
+    return _.chain(this.lobbies)
+        .find(function(lobby) {
+            return _.where(lobby, {id: userId});
+        })
+        .value();
+};
+
 module.exports = PoolLobbies;
