@@ -6,6 +6,8 @@ var condHasAttr = helpers.condHasAttr;
 var stringify = helpers.stringify;
 
 var Pool = require('./Pool');
+var LobbyUpdater = require('./LobbyUpdater');
+var GameUpdater = require('./GameUpdater');
 
 var actions = {
     'initiate:search:game': initiateSearchGame,
@@ -15,6 +17,8 @@ var actions = {
     'enter:game': enterGame,
     'leave:game': leaveGame
 };
+
+_.extend(actions, LobbyUpdater.actions, GameUpdater.actions);
 
 // Actions
 function initiateSearchGame(conn, data) {
