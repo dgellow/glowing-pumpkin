@@ -54,7 +54,7 @@ class ScenarioException(Exception):
     pass
 
 @logScenario('Authenticate with new uuid')
-def authenticateScenario():
+def authenticate():
     sendJson(sock, {
         'action': 'authenticate:user',
         'value': {'id': uuid.uuid4().hex}
@@ -70,7 +70,7 @@ def authenticateScenario():
         return response
 
 @logScenario('Search for a new game')
-def searchForAGameScenario():
+def searchForAGame():
     sendJson(sock, {
         'action': 'initiate:search:game'
     })
@@ -84,7 +84,77 @@ def searchForAGameScenario():
     else:
         return response
 
+@logScenario('Select characters')
+def selectCharacters(characters):
+    sendJson(sock, {
+        'action': 'set:characters',
+        'value': {'characters': characters[:1]}
+    })
+
+    response = receiveJson(sock)
+    if response.get('status', None) != 'success':
+        raise ScenarioException(
+            'Expected response: status == success',
+            'Received response: ' + json.dumps(response)
+        )
+    else:
+        return response
+
+@logScenario('Set as ready')
+def readyToFight():
+    sendJson(sock, {
+        'action': 'set:ready',
+        'value': {'ready': True}
+    })
+
+    response = receiveJson(sock)
+    if response.get('status', None) != 'success':
+        raise ScenarioException(
+            'Expected response: status == success',
+            'Received response: ' + json.dumps(response)
+        )
+    else:
+        return response
+
+@logScenario('What is the current game state ?')
+def getCurrentGameState():
+    sendJson(sock, {
+        'action': 'current:gamestate'
+    })
+
+    response = receiveJson(sock)
+    if response.get('status', None) != 'success':
+        raise ScenarioException(
+            'Expected response: status == success',
+            'Received response: ' + json.dumps(response)
+        )
+    else:
+        return response
+
+@logScenario('Choose a commande to perform')
+def chooseCommande():
+    sendJson(sock, {
+        'action': 'set:commande',
+        'value': {'commande': 'attack'}
+    })
+
+    response = receiveJson(sock)
+    if response.get('status', None) != 'success':
+        raise ScenarioException(
+            'Expected response: status == success',
+            'Received response: ' + json.dumps(response)
+        )
+    else:
+        return response
+
 def main():
-    authenticateScenario()
-    searchForAGameScenario()
+    authenticate()
+    searchForAGame()
+
+    selectCharacters()
+    readyToFight()
+
+    # TODO: Loop on those two fns while the fight is not finished
+    getCurrentGameState()
+    chooseCommande()
 main()
