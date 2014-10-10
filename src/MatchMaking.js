@@ -40,7 +40,13 @@ function matchMaking(delay) {
                 .then(function(otherUser) {
                     connection.socket.write(stringify({
                         status: 'success',
-                        opponent: otherUser
+                        value: {
+                            opponent: otherUser,
+                            allCharacters: [
+                                {id: 'drakula', name: 'Comte Dracula LO'},
+                                {id: 'pikachu', name: 'PIKA PIKA !'}
+                            ]
+                        }
                     }));
                 })
                 .catch(function(err) {

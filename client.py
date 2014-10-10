@@ -134,9 +134,9 @@ def chooseCommande():
 
 def main():
     authenticate()
-    searchForAGame()
+    res = searchForAGame()
 
-    selectCharacters()
+    selectCharacters(res['value']['allCharacters'])
     readyToFight()
 
     # TODO: Loop on those two fns while the fight is not finished
