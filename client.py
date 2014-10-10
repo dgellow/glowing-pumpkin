@@ -86,10 +86,10 @@ def searchForAGame():
         return response
 
 @logScenario('Select characters')
-def selectCharacters(characters):
+def selectCharacters():
     sendJson(sock, {
         'action': 'set:characters',
-        'value': {'characters': characters[:1]}
+        'value': {'characters': ['123456789', 'ninja', 'monstre']}
     })
 
     response = receiveJson(sock)
@@ -136,8 +136,7 @@ def main():
     authenticate()
     res = searchForAGame()
 
-    selectCharacters(res['value']['allCharacters'])
-    readyToFight()
+    selectCharacters()
 
     # TODO: Loop on those two fns while the fight is not finished
     getCurrentGameState()
