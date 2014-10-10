@@ -57,7 +57,8 @@ class ScenarioException(Exception):
 def authenticate():
     sendJson(sock, {
         'action': 'authenticate:user',
-        'value': {'id': uuid.uuid4().hex}
+        'value': {'id': uuid.uuid4().hex,
+                  'name': 'roger'}
     })
 
     response = receiveJson(sock)
@@ -89,22 +90,6 @@ def selectCharacters(characters):
     sendJson(sock, {
         'action': 'set:characters',
         'value': {'characters': characters[:1]}
-    })
-
-    response = receiveJson(sock)
-    if response.get('status', None) != 'success':
-        raise ScenarioException(
-            'Expected response: status == success',
-            'Received response: ' + json.dumps(response)
-        )
-    else:
-        return response
-
-@logScenario('Set as ready')
-def readyToFight():
-    sendJson(sock, {
-        'action': 'set:ready',
-        'value': {'ready': True}
     })
 
     response = receiveJson(sock)
