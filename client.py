@@ -3,6 +3,8 @@ import json
 import time
 import uuid
 
+playerId = uuid.uuid4().hex
+
 color_red = '\033[91m'
 color_green = '\033[92m'
 color_end = '\033[0m'
@@ -57,7 +59,7 @@ class ScenarioException(Exception):
 def authenticate():
     sendJson(sock, {
         'action': 'authenticate:user',
-        'value': {'id': uuid.uuid4().hex,
+        'value': {'id': playerId,
                   'name': 'roger'}
     })
 
@@ -89,7 +91,7 @@ def searchForAGame():
 def selectCharacters(characters):
     sendJson(sock, {
         'action': 'set:characters',
-        'value': {'characters': characters[:1]}
+        'value': {'characters': characters}
     })
 
     response = receiveJson(sock)
@@ -117,12 +119,16 @@ def getCurrentGameState():
         return response
 
 @logScenario('Choose a commande to perform')
-def chooseCommande(opponent):
+def chooseCommande(sourceChar, opponent):
     sendJson(sock, {
         'action': 'set:commande',
         'value': {
-            'commande': 'attack',
-            'target': opponent['id']
+            'commande': {
+                'event': 'attack',
+                'sourceCharacter': sourceChar,
+                'targetCharacter': opponent['characters'][0],
+                'targetPlayer': opponent['id']
+            }
         }
     })
 
@@ -141,10 +147,11 @@ def main():
     res = searchForAGame()
     value = res.get('value', {})
     allCharacters, opponent = value.get('allCharacters'), value.get('opponent')
+    char = allCharacters[0]
 
-    selectCharacters(allCharacters)
+    value = selectCharacters([char]).get('value')
+    opponents = [player for player in value.get('players') if player['id'] != playerId]
 
-    # TODO: Loop on those two fns while the fight is not finished
-    getCurrentGameState()
-    chooseCommande(opponent)
+    while getCurrentGameState()['value']['isRunning']:
+        chooseCommande(char, opponents[0])
 main()
