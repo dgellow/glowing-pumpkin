@@ -37,7 +37,7 @@ function getCurrentGamestate(conn, data) {
     if(!!gameState) {
         notifySucces(conn.user, gameState);
     } else {
-        notifyFailure(conn.user, "no game State");
+        notifyFailure(conn.user, "gameState cannot be retreived, either no game or wrong user");
     }
 }
 
