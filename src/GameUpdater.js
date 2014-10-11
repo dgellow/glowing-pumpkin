@@ -12,9 +12,8 @@ var actions = {
 };
 
 function gameStateByUser(user) {
-    return Pool.getByLabel('games')
-        .getByUser(user)
-        .gameState;
+    var user = Pool.getByLabel('games').getByUser(user)
+    return user ? user.gameState : null;
 }
 
 function notifySucces(user, value){
@@ -29,6 +28,17 @@ function notifyFailure(user, message){
         status: "Error",
         message: message
     }));
+}
+
+
+
+function getCurrentGamestate(conn, data) {
+    var gameaState = gameStateByUser(conn.user);
+    if(gameState) {
+        notifySucces(conn.user, gameState);
+    } else {
+        notifyFailure(conn.user, "no game State");
+    }
 }
 
 function setCommande(conn, data) {
