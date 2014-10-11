@@ -43,8 +43,8 @@ function getCurrentGamestate(conn, data) {
 
 function setCommande(conn, data) {
     var game = Pool.getByLabel('games').getByUser(conn.user);
-    var user = _.where(game.players, {id: conn.user.id});
-    user.command = data.value.setCommande;
+    var user = _.findWhere(game.players, {id: conn.user.id});
+    user.commande = data.value.commande;
 }
 
 module.exports = {

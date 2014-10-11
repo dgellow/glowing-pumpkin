@@ -42,8 +42,7 @@ function matchMaking(delay) {
                 value: {
                     opponent: otherUser,
                     allCharacters: [
-                        {id: 'drakula', name: 'Comte Dracula LO'},
-                        {id: 'pikachu', name: 'PIKA PIKA !'}
+                        {id: 'drakula', name: 'Comte Dracula \o/', type: 'vampire'}
                     ]
                 }
             }));
