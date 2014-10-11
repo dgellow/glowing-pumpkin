@@ -20,7 +20,7 @@ def sendJson(sock, dict):
     return sock.send(writeJson(dict))
 
 def receiveJson(sock):
-    return readJson(sock.recv(1000))
+    return readJson(sock.recv(4096))
 
 def decoratedText(str, char):
     border = char * 20
@@ -86,10 +86,10 @@ def searchForAGame():
         return response
 
 @logScenario('Select characters')
-def selectCharacters():
+def selectCharacters(characters):
     sendJson(sock, {
         'action': 'set:characters',
-        'value': {'characters': ['123456789', 'ninja', 'monstre']}
+        'value': {'characters': characters[:1]}
     })
 
     response = receiveJson(sock)
@@ -104,7 +104,7 @@ def selectCharacters():
 @logScenario('What is the current game state ?')
 def getCurrentGameState():
     sendJson(sock, {
-        'action': 'current:gamestate'
+        'action': 'get:gamestate'
     })
 
     response = receiveJson(sock)
@@ -117,10 +117,13 @@ def getCurrentGameState():
         return response
 
 @logScenario('Choose a commande to perform')
-def chooseCommande():
+def chooseCommande(opponent):
     sendJson(sock, {
         'action': 'set:commande',
-        'value': {'commande': 'attack'}
+        'value': {
+            'commande': 'attack',
+            'target': opponent['id']
+        }
     })
 
     response = receiveJson(sock)
@@ -134,11 +137,14 @@ def chooseCommande():
 
 def main():
     authenticate()
-    res = searchForAGame()
 
-    selectCharacters()
+    res = searchForAGame()
+    value = res.get('value', {})
+    allCharacters, opponent = value.get('allCharacters'), value.get('opponent')
+
+    selectCharacters(allCharacters)
 
     # TODO: Loop on those two fns while the fight is not finished
     getCurrentGameState()
-    chooseCommande()
+    chooseCommande(opponent)
 main()
