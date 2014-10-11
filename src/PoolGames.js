@@ -20,6 +20,21 @@ PoolGames.prototype.remove = function(user) {
     });
 };
 
+PoolGames.prototype.removeUser = function(user) {
+    _.chain(this.games)
+        .filter(function(game) { return game.gameState.isRunning; })
+        .each(function(game) {
+            var u = _.find(game.players, function(player) {
+                return player.id === user.id;
+            });
+            if(u) {
+                game.gameState.isRunning = false;
+                game.gameState.reason = 'A player leave the fight';
+                game.gameState.updateTimestamp = new Date().getTime();
+            }
+        });
+};
+
 PoolGames.prototype.push = function(game) {
     var otherPools = this.selectOtherPools();
 

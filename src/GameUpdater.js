@@ -30,8 +30,6 @@ function notifyFailure(user, message){
     }));
 }
 
-
-
 function getCurrentGamestate(conn, data) {
     var gameState = gameStateByUser(conn.user);
     if(!!gameState) {

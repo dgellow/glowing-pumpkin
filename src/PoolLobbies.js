@@ -25,6 +25,15 @@ PoolLobbies.prototype.remove = function(user) {
     });
 };
 
+PoolLobbies.prototype.removeUser = function(user) {
+    _.each(this.lobbies, function(lobby) {
+        _.remove(lobby, function(player) {
+            return player.id === user.id;
+        });
+    });
+    return this.lobbies;
+};
+
 PoolLobbies.prototype.push = function(lobby) {
     var otherPools = this.selectOtherPools();
 

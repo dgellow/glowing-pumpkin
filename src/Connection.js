@@ -1,6 +1,8 @@
 var _ = require('lodash');
 var uuid = require('node-uuid');
 
+var Pool = require('./Pool');
+
 var allConnections = [];
 
 var Connection = function(socket) {
@@ -30,7 +32,15 @@ Connection.prototype = Object.create(null);
 Connection.prototype.constructor = Connection;
 
 Connection.prototype.close = function() {
-    return _.remove(allConnections, {id: this.id});
+    // remove the user from every pools
+    if (this.user) {
+        _.each(Pool.getAll(), function(p) {
+            p.removeUser(this.user);
+        }, this);
+    }
+
+    // remove the Connection object
+    _.remove(allConnections, {id: this.id});
 };
 
 module.exports = Connection;

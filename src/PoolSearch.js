@@ -20,6 +20,12 @@ PoolSearch.prototype.remove = function(user) {
     });
 };
 
+
+PoolSearch.prototype.removeUser = function(user) {
+    return this.remove(user);
+};
+
+
 PoolSearch.prototype.push = function(user) {
     // remove user from other pools
     _.each(this.selectOtherPools(), function(pool) {

@@ -97,10 +97,13 @@ function isTurnComplete(game) {
 }
 
 function notify(player, value) {
-    Connection.getByUser(player).socket.write(stringify({
-        status: 'success',
-        value: value
-    }));
+    var connection = Connection.getByUser(player);
+    if (connection) {
+        connection.socket.write(stringify({
+            status: 'success',
+            value: value
+        }));
+    }
 }
 
 function gameLogic(delay) {
