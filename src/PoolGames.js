@@ -20,7 +20,7 @@ PoolGames.prototype.remove = function(user) {
     });
 };
 
-PoolGames.prototype.push= function(game) {
+PoolGames.prototype.push = function(game) {
     var otherPools = this.selectOtherPools();
 
     // remove each user in the game from other pools
@@ -33,5 +33,12 @@ PoolGames.prototype.push= function(game) {
     // add user into this pool
     this.add(game);
 };
+
+PoolGames.prototype.getByUser = function(user) {
+    return _.find(this.games, function(g){
+        return _.where(g.players, {id: user.id });
+    });
+};
+
 
 module.exports = PoolGames;
