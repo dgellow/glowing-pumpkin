@@ -27,7 +27,9 @@ var charactersConfig = {
     views: {
         all :{
             map: function(doc) {
-                return emit(doc._id, doc);
+                if(doc.type && doc.name) {
+                    return emit(doc._id, doc);
+                }
             }
         }
     }

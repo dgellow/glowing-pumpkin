@@ -5,11 +5,7 @@ var stringify = helpers.stringify;
 
 var Pool = require('./Pool');
 var Connection = require('./Connection');
-
-var modificateurs = {
-    vampire: {vampire: 1},
-    meta: {meta: 0}
-};
+var Characters = require('./Characters');
 
 function dice(attackSource, defenseTarget) {
     return  Math.random() < attackSource / (attackSource + defenseTarget);
@@ -19,9 +15,11 @@ function resolutionStep(sourcePlayer, sourceCharacter, targetPlayer,
                         targetCharacter, event, amount) {
     return {
         sourcePlayer: sourcePlayer.id,
-        sourceCharacter: sourceCharacter.id,
-        targetCharacter: targetCharacter.id,
         targetPlayer: targetPlayer.id,
+
+        sourceCharacter: sourceCharacter,
+        targetCharacter: targetCharacter,
+
         event: event,
         amount: amount
     };
@@ -31,23 +29,24 @@ function resolve(game, sourcePlayer) {
     var steps = [];
     var commande = sourcePlayer.commande;
 
-    var sourceCharacter = commande.sourceCharacter;
-    var sourceType = sourceCharacter.type;
-    var targetCharacter = commande.targetCharacter;
-    var targetType = targetCharacter.type;
     var targetPlayer = _.find(game.players, function(p) {
         return p.id === commande.targetPlayer;
     });
 
     var curriedStep = resolutionStep.bind(this,
-                                          sourcePlayer, sourceCharacter,
-                                          targetPlayer, targetCharacter);
+                                          sourcePlayer, commande.sourceCharacter,
+                                          targetPlayer, commande.targetCharacter);
 
     if (sourcePlayer.hp <= 0) {
         // a dead character cannot do any action
-        steps.push(resolutionStep(sourcePlayer, sourceCharacter, sourcePlayer, sourceCharacter, 'dead'));
+        steps.push(resolutionStep(sourcePlayer, commande.sourceCharacter,
+                                  sourcePlayer, commande.sourceCharacter,
+                                  'dead'));
+
     } else if (dice(sourcePlayer.attack, targetPlayer.defense)) {
-        var amount = modificateurs[sourceType][targetType];
+
+        var amount = Characters.getModifier(commande.sourceCharacter,
+                                            commande.targetCharacter);
         targetPlayer.hp -= amount;
 
         steps.push(curriedStep('attack', amount));
@@ -55,6 +54,7 @@ function resolve(game, sourcePlayer) {
         if(targetPlayer.hp <= 0) {
             steps.push(curriedStep('kill'));
         }
+
     } else {
         steps.push(curriedStep('miss'));
     }

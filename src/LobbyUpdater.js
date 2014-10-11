@@ -2,6 +2,7 @@ var _ = require('lodash');
 var util = require('util');
 
 var Pool = require('./Pool');
+var Characters = require('./Characters');
 
 var helpers = require('./helpers');
 var log = helpers.log;
@@ -12,11 +13,10 @@ var actions = {
 
 function setCharacters(conn, data) {
     var lobby = Pool.getByLabel('lobbies').getByUser(conn.user);
-    _.each(lobby, function(player) {
-        if(player.id === conn.user.id) {
-            player.characters = data.value.characters;
-        }
+    var user = _.find(lobby, function(player) {
+        return player.id === conn.user.id;
     });
+    user.characters = _.map(data.value.characters, Characters.getById);
 }
 
 module.exports = {
