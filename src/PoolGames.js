@@ -50,9 +50,13 @@ PoolGames.prototype.push = function(game) {
 };
 
 PoolGames.prototype.getByUser = function(user) {
-    return _.find(this.games, function(g){
-        return _.where(g.players, {id: user.id });
+    var result = _.find(this.games, function(game){
+        return !_.chain(game.players)
+            .where({id: user.id })
+            .isEmpty()
+            .value();
     });
+    return result;
 };
 
 
