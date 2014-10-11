@@ -25,7 +25,7 @@ var User = function(id, name) {
     this.attack = 3 * dice(6);
     this.speed = 3 * dice(6);
     this.defense = 3 * dice(6);
-    this.hp = 3 + dice(6);
+    this.hp = 3;
 };
 
 User.create = function(id, name) {
