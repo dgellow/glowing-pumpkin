@@ -14,7 +14,7 @@ function setCharacters(conn, data) {
     var lobby = Pool.getByLabel('lobbies').getByUser(conn.user);
     _.each(lobby, function(player) {
         if(player.id === conn.user.id) {
-            player.ready = data.value.ready;
+            player.characters = data.value.characters;
         }
     });
 }

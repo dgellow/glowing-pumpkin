@@ -20,7 +20,12 @@ function matchMaking(delay) {
         }
 
         // take 2 users and create a lobby
-        var lobby = _.take(poolSearch.users, 2);
+        var lobby = _.chain(poolSearch.users)
+            .take(2)
+            .map(function(user) {
+                return _.extend(user, {characters: []});
+            })
+            .value();
 
         // move them in poolLobbies
         poolLobbies.push(lobby);
