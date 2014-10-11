@@ -79,12 +79,20 @@ function updateGameState(game) {
     var alivePlayers = _.filter(game.players, function(p) { return p.hp > 0; });
     if (alivePlayers.length <= 1) {
         gameState.isRunning = false;
+        gameState.reason = 'Fight is finish';
+        gameState.updateTimestamp = new Date().getTime();
     }
 
     // if there is only one player connected
     if (game.players.length <= 1) {
         gameState.isRunning = false;
+        gameState.reason = 'A player leave the fight';
+        gameState.updateTimestamp = new Date().getTime();
     }
+}
+
+function isGameRunning(game) {
+    return game.gameState.isRunning;
 }
 
 function isTurnComplete(game) {
@@ -112,7 +120,9 @@ function gameLogic(delay) {
     return setInterval(function() {
         if (poolGames.games.length <= 0) { return; }
 
+        // Get games awaiting a response
         _.chain(poolGames.games)
+            .filter(isGameRunning)
             .filter(isTurnComplete)
             .each(function(game) {
                 var updateSequence = applyLogic(game);
@@ -122,6 +132,17 @@ function gameLogic(delay) {
                 updateGameState(game);
             });
 
+        // Remove games with isRunning === false and updateTimestamp older than 5min
+        _.chain(poolGames.games)
+            .filter(function(game) {
+                return !game.gameState.isRunning;
+            })
+            .remove(function(game) {
+                var min5 = 5 * 60000; // 5 minutes
+                var currentTime = new Date().getTime();
+                return game.gameState.updateTimestamp &&
+                    game.gameState.updateTimestamp < (currentTime - min5);
+            });
     }, delay);
 }
 
