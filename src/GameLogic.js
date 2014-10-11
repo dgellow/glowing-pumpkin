@@ -43,7 +43,10 @@ function resolve(game, sourcePlayer) {
                                           sourcePlayer, sourceCharacter,
                                           targetPlayer, targetCharacter);
 
-    if (sourcePlayer.hp > 0 && dice(sourcePlayer.attack, targetPlayer.defense)) {
+    if (sourcePlayer.hp <= 0) {
+        // a dead character cannot do any action
+        steps.push(resolutionStep(sourcePlayer, sourceCharacter, sourcePlayer, sourceCharacter, 'dead'));
+    } else if (dice(sourcePlayer.attack, targetPlayer.defense)) {
         var amount = modificateurs[sourceType][targetType];
         targetPlayer.hp -= amount;
 
@@ -67,6 +70,21 @@ function applyLogic(game) {
         .map(resolve.bind(this, game))
         .flatten()
         .value();
+}
+
+function updateGameState(game) {
+    var gameState = game.gameState;
+
+    // if there is only one player alive
+    var alivePlayers = _.filter(game.players, function(p) { return p.hp > 0; });
+    if (alivePlayers.length <= 1) {
+        gameState.isRunning = false;
+    }
+
+    // if there is only one player connected
+    if (game.players.length <= 1) {
+        gameState.isRunning = false;
+    }
 }
 
 function isTurnComplete(game) {
@@ -98,6 +116,7 @@ function gameLogic(delay) {
                 _.each(game.players, function(player) {
                     notify(player, updateSequence);
                 });
+                updateGameState(game);
             });
 
     }, delay);
