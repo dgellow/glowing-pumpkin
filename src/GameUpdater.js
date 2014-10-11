@@ -12,8 +12,8 @@ var actions = {
 };
 
 function gameStateByUser(user) {
-    var user = Pool.getByLabel('games').getByUser(user)
-    return user ? user.gameState : null;
+    var game = Pool.getByLabel('games').getByUser(user)
+    return game ? game.gameState : null;
 }
 
 function notifySucces(user, value){
