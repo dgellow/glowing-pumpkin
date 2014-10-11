@@ -10,27 +10,24 @@ var PoolSearch = function() {
 PoolSearch.prototype = Object.create(Pool.prototype);
 PoolSearch.prototype.constructor = PoolSearch;
 
-PoolSearch.prototype.add = function(userId) {
-    return this.users.push(userId);
+PoolSearch.prototype.add = function(user) {
+    return this.users.push(user);
 };
 
-PoolSearch.prototype.remove = function(userId) {
-    return _.remove(this.users, function(user) {
-        return user === userId;
+PoolSearch.prototype.remove = function(user) {
+    return _.remove(this.users, function(u) {
+        return u.id === user.id;
     });
 };
 
 PoolSearch.prototype.push = function(user) {
-    var userId = (typeof user === 'string') ? user: user.id;
-    var otherPools = this.selectOtherPools();
-
     // remove user from other pools
-    _.each(otherPools, function(pool) {
-        pool.remove(userId);
+    _.each(this.selectOtherPools(), function(pool) {
+        pool.remove(user);
     });
 
     // add user into this pool
-    this.add(userId);
+    this.add(user);
 };
 
 module.exports = PoolSearch;

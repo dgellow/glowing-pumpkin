@@ -13,9 +13,9 @@ var User = function(id, name) {
 };
 
 User.create = function(id, name) {
-    return dbUsers.insert({id: id, name: name}, id)
+    return dbUsers.insert(new User(id, name), id)
         .then(function(user) {
-            return new User(user.id, name);
+            return user;
         });
 };
 
@@ -26,23 +26,15 @@ User.exists = function(id) {
 User.getById = function(id) {
     return dbUsers.getById(id)
         .then(function(user) {
-            return new User(user.id, user.name);
+            return user;
         });
 };
 
-User.getAll = function() {
-    return dbUsers.getAll().then(function(users) {
-        return _.map(users, function(user) {
-            return new User(user.id, user.name);
-        });
-    });
+User.save = function(user) {
+    return dbUsers.save(user);
 };
 
 User.prototype = Object.create(null);
 User.prototype.constructor = User;
-
-User.prototype.save = function() {
-    return dbUsers.save(this);
-};
 
 module.exports = User;

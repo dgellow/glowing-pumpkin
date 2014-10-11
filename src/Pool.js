@@ -26,15 +26,15 @@ Pool.prototype.selectOtherPools = function() {
     });
 };
 
-Pool.prototype.add = function(userId) {
+Pool.prototype.add = function() {
     throw new Error('Pool.add method should be overrided');
 };
 
-Pool.prototype.remove = function(userId) {
+Pool.prototype.remove = function() {
     throw new Error('Pool.remove method should be overrided');
 };
 
-Pool.prototype.push = function(user) {
+Pool.prototype.push = function() {
     throw new Error('Pool.push method should be overrided');
 };
 

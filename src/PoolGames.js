@@ -14,9 +14,11 @@ PoolGames.prototype.add = function(game) {
     return this.games.push(game);
 };
 
-PoolGames.prototype.remove = function(userId) {
+PoolGames.prototype.remove = function(user) {
     return _.remove(this.games, function(game) {
-        return _.contains(lobby, game);
+        // seems not correct to me, should remove lobby containing user, not game
+        // TOCHECK
+        return _.findWhere(game.players, {id: user.id});
     });
 };
 
@@ -25,9 +27,8 @@ PoolGames.prototype.push = function(game) {
 
     // remove each user in the game from other pools
     _.each(game.opponents, function(user) {
-        var userId = (typeof user === 'string') ? user: user.id;
         _.each(otherPools, function(pool) {
-            pool.remove(userId);
+            pool.remove(user);
         });
     });
 

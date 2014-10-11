@@ -20,9 +20,8 @@ Connection.getById = function(id) {
 };
 
 Connection.getByUser = function(user) {
-    var userId = (typeof user === 'string') ? user : user.id;
     var result = _.filter(allConnections, function(c) {
-        return c.user.id == userId;
+        return c.user.id == user.id;
     });
     return _.first(result);
 };

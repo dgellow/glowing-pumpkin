@@ -19,9 +19,9 @@ PoolLobbies.prototype.add = function(lobby) {
     return this.lobbies.push(lobby);
 };
 
-PoolLobbies.prototype.remove = function(userId) {
+PoolLobbies.prototype.remove = function(user) {
     return _.remove(this.lobbies, function(lobby) {
-        return _.contains(lobby, userId);
+        return _.findWhere(lobby, {id: user.id});
     });
 };
 
@@ -30,9 +30,8 @@ PoolLobbies.prototype.push = function(lobby) {
 
     // we remove each user in the lobby from other pools
     _.each(lobby, function(user) {
-        var userId = (typeof user === 'string') ? user: user.id;
         _.each(otherPools, function(pool) {
-            pool.remove(userId);
+            pool.remove(user);
         });
     });
 
@@ -40,10 +39,10 @@ PoolLobbies.prototype.push = function(lobby) {
     this.add(lobby);
 };
 
-PoolLobbies.prototype.getByUser = function(userId) {
+PoolLobbies.prototype.getByUser = function(user) {
     return _.chain(this.lobbies)
         .find(function(lobby) {
-            return _.where(lobby, {id: userId});
+            return _.where(lobby, {id: user.id});
         })
         .value();
 };

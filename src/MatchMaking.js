@@ -20,41 +20,28 @@ function matchMaking(delay) {
         }
 
         // take 2 users and create a lobby
-        var lobby = _.chain(poolSearch.users)
-            .take(2)
-            .map(function(player) {
-                return _.extend(player, {ready: null, characters: []});
-            })
-            .value();
+        var lobby = _.take(poolSearch.users, 2);
 
         // move them in poolLobbies
         poolLobbies.push(lobby);
 
         // notify users
-        _.each(lobby, function(userId, index) {
-            var connection = Connection.getByUser(userId);
-            var otherUserId = lobby[(index) ? 0 : 1];
-            var otherUser = User.getById(otherUserId);
+        _.each(lobby, function(user, index) {
+            var connection = Connection.getByUser(user);
 
-            User.getById(otherUserId)
-                .then(function(otherUser) {
-                    connection.socket.write(stringify({
-                        status: 'success',
-                        value: {
-                            opponent: otherUser,
-                            allCharacters: [
-                                {id: 'drakula', name: 'Comte Dracula LO'},
-                                {id: 'pikachu', name: 'PIKA PIKA !'}
-                            ]
-                        }
-                    }));
-                })
-                .catch(function(err) {
-                    connection.socket.write(stringify({
-                        status: 'error',
-                        message: err.name + ': ' + err.message
-                    }));
-                }).done();
+            // at the moment, handle only two users in a lobby
+            var otherUser = lobby[(index) ? 0 : 1];
+
+            connection.socket.write(stringify({
+                status: 'success',
+                value: {
+                    opponent: otherUser,
+                    allCharacters: [
+                        {id: 'drakula', name: 'Comte Dracula LO'},
+                        {id: 'pikachu', name: 'PIKA PIKA !'}
+                    ]
+                }
+            }));
         });
 
         log('Search games: ' + util.inspect(poolSearch));
