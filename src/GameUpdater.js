@@ -17,14 +17,14 @@ function gameStateByUser(user) {
 }
 
 function notifySucces(user, value){
-    Connection.getByUser(conn.user).socket.write(stringify({
+    Connection.getByUser(user).socket.write(stringify({
         status: "success",
         value: value
     }));
 }
 
 function notifyFailure(user, message){
-    Connection.getByUser(conn.user).socket.write(stringify({
+    Connection.getByUser(user).socket.write(stringify({
         status: "Error",
         message: message
     }));
@@ -33,8 +33,8 @@ function notifyFailure(user, message){
 
 
 function getCurrentGamestate(conn, data) {
-    var gameaState = gameStateByUser(conn.user);
-    if(gameState) {
+    var gameState = gameStateByUser(conn.user);
+    if(!!gameState) {
         notifySucces(conn.user, gameState);
     } else {
         notifyFailure(conn.user, "no game State");
