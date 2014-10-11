@@ -4,7 +4,7 @@ var helpers = require('./helpers');
 var stringify = helpers.stringify;
 
 var Pool = require('./Pool');
-var Connection = require('./Connection')
+var Connection = require('./Connection');
 
 var actions = {
     'get:gamestate': getCurrentGamestate,
@@ -12,7 +12,7 @@ var actions = {
 };
 
 function gameStateByUser(user) {
-    var game = Pool.getByLabel('games').getByUser(user)
+    var game = Pool.getByLabel('games').getByUser(user);
     return game ? game.gameState : null;
 }
 
@@ -43,8 +43,8 @@ function getCurrentGamestate(conn, data) {
 
 function setCommande(conn, data) {
     var game = Pool.getByLabel('games').getByUser(conn.user);
-    var user = _.where(game.players, {id: conn.user.id});
-    user.command = data.value.setCommande;
+    var user = _.findWhere(game.players, {id: conn.user.id});
+    user.commande = data.value.commande;
 }
 
 module.exports = {

@@ -25,6 +25,7 @@ var PoolGames = new (require('./PoolGames'))();
 
 var matchMaking = require('./MatchMaking');
 var lobbyToGame = require('./LobbyToGame');
+var gameLogic = require('./GameLogic');
 
 // Main function, run everytime a connection has been initiated
 function main(socket) {
@@ -69,6 +70,7 @@ Server.prototype.run = function() {
 
         matchMaking(1000);
         lobbyToGame(1000);
+        gameLogic(1000);
     } catch(err) {
         log('!! Exception: ' + util.inspect(err));
         delete this.tcpServer;
