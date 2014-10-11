@@ -2,6 +2,7 @@ import socket
 import json
 import time
 import uuid
+import random
 
 playerId = uuid.uuid4().hex
 
@@ -119,15 +120,15 @@ def getCurrentGameState():
         return response
 
 @logScenario('Choose a commande to perform')
-def chooseCommande(sourceChar, opponent):
+def chooseCommande(sourceChar, targetChar, opponentId):
     sendJson(sock, {
         'action': 'set:commande',
         'value': {
             'commande': {
                 'event': 'attack',
                 'sourceCharacter': sourceChar,
-                'targetCharacter': opponent['characters'][0]['id'],
-                'targetPlayer': opponent['id']
+                'targetCharacter': targetChar,
+                'targetPlayer': opponentId
             }
         }
     })
@@ -147,11 +148,15 @@ def main():
     res = searchForAGame()
     value = res.get('value', {})
     allCharacters, opponent = value.get('allCharacters'), value.get('opponent')
-    char = allCharacters[0]['id']
+    char = random.choice(allCharacters)['id']
 
     value = selectCharacters([char]).get('value')
     opponents = [player for player in value.get('players') if player['id'] != playerId]
 
+    opponent = random.choice(opponents)
+    opponentId = opponent['id']
+    targetChar = random.choice(opponent['characters'])['id']
+
     while getCurrentGameState()['value']['isRunning']:
-        chooseCommande(char, opponents[0])
+        chooseCommande(char, targetChar, opponentId)
 main()
