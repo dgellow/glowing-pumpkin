@@ -126,7 +126,7 @@ def chooseCommande(sourceChar, opponent):
             'commande': {
                 'event': 'attack',
                 'sourceCharacter': sourceChar,
-                'targetCharacter': opponent['characters'][0],
+                'targetCharacter': opponent['characters'][0]['id'],
                 'targetPlayer': opponent['id']
             }
         }
@@ -147,7 +147,7 @@ def main():
     res = searchForAGame()
     value = res.get('value', {})
     allCharacters, opponent = value.get('allCharacters'), value.get('opponent')
-    char = allCharacters[0]
+    char = allCharacters[0]['id']
 
     value = selectCharacters([char]).get('value')
     opponents = [player for player in value.get('players') if player['id'] != playerId]
