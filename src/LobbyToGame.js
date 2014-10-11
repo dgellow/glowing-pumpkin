@@ -1,7 +1,10 @@
 var _ = require('lodash');
-var Connection = require('./Connection');
+
 var helpers = require('./helpers');
 var stringify = helpers.stringify;
+
+var Pool = require('./Pool');
+var Connection = require('./Connection');
 
 var initialGameState = { isRunning: true };
 
@@ -11,23 +14,19 @@ function isPlayerValid(player){
 
 function isLobbyReady(lobbyArray) {
     return _.reduce(lobbyArray, function(e1, e2) {
-        return isPlayerValid(e1) && isPLayerValid(e2);
+        return isPlayerValid(e1) && isPlayerValid(e2);
     });
-}
-
-function getPlayers(obj){
-    return _.pluck(obj, 'player');
 }
 
 function convertToGame(lobby){
     return {
         gameState: initialGameState,
-        players: lobby.players
+        players: lobby
     };
 }
 
 function notifyInGame(player) {
-    Connection.getByUser(player).socket.write(stringyfy({
+    Connection.getByUser(player).socket.write(stringify({
         status: 'success',
         value: initialGameState
     }));
@@ -35,19 +34,17 @@ function notifyInGame(player) {
 
 function moveToGame(delay) {
     var poolLobbies = Pool.getByLabel('lobbies');
-    var poolGames = Pool.getbyLabel('');
+    var poolGames = Pool.getByLabel('games');
 
     return setInterval( function() {
         if( poolLobbies.lobbies.length <= 0 ) { return; }
 
-        
         _.chain(poolLobbies.lobbies)
             .filter(isLobbyReady)
             .map(convertToGame)
             .each(function(game){
-                debugger;
                 poolGames.push(game);
-                _.each(getPlayers(game), notifyInGame);
+                _.each(game.players, notifyInGame);
             });
 
     }, delay);
