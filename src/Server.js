@@ -10,6 +10,7 @@ var parse = helpers.parse;
 var stringify = helpers.stringify;
 var condHasAttr = helpers.condHasAttr;
 
+var Characters = require('./Characters');
 var User = require('./User');
 var Connection = require('./Connection');
 var Pool = require('./Pool');
@@ -68,6 +69,10 @@ Server.prototype.run = function() {
             log('server bound');
         });
 
+        // Load characters
+        Characters.load();
+
+        // Run background tasks every 1s
         matchMaking(1000);
         lobbyToGame(1000);
         gameLogic(1000);

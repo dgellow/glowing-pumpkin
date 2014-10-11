@@ -2,6 +2,7 @@ var _ = require('lodash');
 var util = require('util');
 
 var User = require('./User');
+var Characters = require('./Characters');
 var Connection = require('./Connection');
 var Pool = require('./Pool');
 
@@ -41,9 +42,7 @@ function matchMaking(delay) {
                 status: 'success',
                 value: {
                     opponent: otherUser,
-                    allCharacters: [
-                        {id: 'drakula', name: 'Comte Dracula \o/', type: 'vampire'}
-                    ]
+                    allCharacters: Characters.getAll()
                 }
             }));
         });
