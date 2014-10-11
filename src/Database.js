@@ -77,7 +77,7 @@ Database.prototype.insert = function(document, documentId) {
         if (err) {
             deferred.reject(new CouchDBException(err.reason));
         } else {
-            deferred.resolve(doc);
+            deferred.resolve(document);
         }
     });
     return deferred.promise;
