@@ -20,11 +20,11 @@ PoolGames.prototype.remove = function(user) {
     });
 };
 
-PoolGames.prototype.push = function(game) {
+PoolGames.prototype.push= function(game) {
     var otherPools = this.selectOtherPools();
 
     // remove each user in the game from other pools
-    _.each(game.opponents, function(user) {
+    _.each(game.players, function(user) {
         _.each(otherPools, function(pool) {
             pool.remove(user);
         });
