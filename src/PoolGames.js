@@ -16,8 +16,6 @@ PoolGames.prototype.add = function(game) {
 
 PoolGames.prototype.remove = function(user) {
     return _.remove(this.games, function(game) {
-        // seems not correct to me, should remove lobby containing user, not game
-        // TOCHECK
         return _.findWhere(game.players, {id: user.id});
     });
 };
