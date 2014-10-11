@@ -6,8 +6,6 @@ var stringify = helpers.stringify;
 var Pool = require('./Pool');
 var Connection = require('./Connection');
 
-var initialGameState = { isRunning: true };
-
 function isPlayerValid(player){
     return player.characters.length > 0;
 }
@@ -20,7 +18,7 @@ function isLobbyReady(lobbyArray) {
 
 function convertToGame(lobby){
     return {
-        gameState: initialGameState,
+        gameState: {isRunning: true},
         players: lobby
     };
 }
