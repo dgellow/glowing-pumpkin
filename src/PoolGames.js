@@ -34,4 +34,10 @@ PoolGames.prototype.push= function(game) {
     this.add(game);
 };
 
+PoolGames.prototype.getByUser = function(user) {
+    return _.find(this.games, function(g){
+        return _.where(g, {id: user.id});
+    });
+};
+
 module.exports = PoolGames;
