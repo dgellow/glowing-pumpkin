@@ -17,17 +17,23 @@ function gameStateByUser(user) {
         .gameState;
 }
 
-function getCurrentGamestate(conn, data) {
+function notifySucces(user, value){
     Connection.getByUser(conn.user).socket.write(stringify({
         status: "success",
-        gameState: gameStateByUser(conn.user)
+        value: value
+    }));
+}
+
+function notifyFailure(user, message){
+    Connection.getByUser(conn.user).socket.write(stringify({
+        status: "Error",
+        message: message
     }));
 }
 
 function setCommande(conn, data) {
     var game = Pool.getByLabel('games').getByUser(conn.user);
     var user = _.where(game.players, {id: conn.user.id});
-    debugger;
     user.command = data.value.setCommande;
 }
 
