@@ -29,7 +29,7 @@ function stringify(obj) {
         strData = JSON.stringify(obj);
     } catch(err) {
         log('!! Exception: ' + util.inspect(err));
-        strData = "";
+        strData = JSON.stringify({status: 'error', message: 'server exception '});
     } finally {
         return strData;
     }
