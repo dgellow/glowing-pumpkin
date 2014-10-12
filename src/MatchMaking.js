@@ -33,18 +33,13 @@ function matchMaking(delay) {
 
         // notify users
         _.each(lobby, function(user, index) {
-            var connection = Connection.getByUser(user);
-
             // at the moment, handle only two users in a lobby
             var otherUser = lobby[(index) ? 0 : 1];
 
-            connection.socket.write(stringify({
-                status: 'success',
-                value: {
-                    opponent: otherUser,
-                    allCharacters: Characters.getAll()
-                }
-            }));
+            Connection.notifySuccess({
+                opponent: otherUser,
+                allCharacters: Characters.getAll()
+            }, user);
         });
 
         log('Search games: ' + util.inspect(poolSearch));

@@ -51,12 +51,9 @@ function route(connection, data) {
         if (_.has(actions, data.action)) {
             actions[data.action](conn, data);
         } else {
-            conn.socket.write(stringify({
-                status: 'error',
-                message: 'The action ' +
-                    util.inspect(data.action) +
-                    ' is not managed'
-            }) + '\r\n');
+            Connection.notifyError('The action ' +
+                util.inspect(data.action) +
+                ' is not managed', conn.user);
         }
     });
 }
