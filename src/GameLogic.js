@@ -72,22 +72,29 @@ function applyLogic(game) {
         .value();
 }
 
+function setGameState(isRunning, reason, message, value) {
+    this.updateTimestamp = new Date().getTime();
+    this.isRunning = isRunning;
+    this.reason = reason;
+    this.message = message;
+    this.value = (value) ? value: null;
+}
+
 function updateGameState(game) {
     var gameState = game.gameState;
+    var gameNotRunning = setGameState.bind(gameState, false);
 
     // if there is only one player alive
     var alivePlayers = _.filter(game.players, function(p) { return p.hp > 0; });
-    if (alivePlayers.length <= 1) {
-        gameState.isRunning = false;
-        gameState.reason = 'Fight is finish';
-        gameState.updateTimestamp = new Date().getTime();
+    if (alivePlayers.length === 1) {
+        var winner = _.first(alivePlayers);
+        gameNotRunning('game_finished', 'The fight is finished. We have a winner.',
+                       {winner: winner.id});
     }
 
     // if there is only one player connected
     if (game.players.length <= 1) {
-        gameState.isRunning = false;
-        gameState.reason = 'A player leave the fight';
-        gameState.updateTimestamp = new Date().getTime();
+        gameNotRunning('not_enough_players', 'There is not enough players to continue the fight');
     }
 }
 
