@@ -9,6 +9,9 @@ playerNames = ('Roger', 'Josephine',
                'Gladys', 'Rita',
                'Robin', 'Connie',)
 
+weighted_choice = lambda s : random.choice(sum(([v]*wt for v,wt in s),[]))
+commandes = [('attack', 95), ('escape', 5)]
+
 color_red = '\033[91m'
 color_green = '\033[92m'
 color_end = '\033[0m'
@@ -128,7 +131,7 @@ def chooseCommande(sourceChar, targetChar, opponentId):
         'action': 'set:commande',
         'value': {
             'commande': {
-                'event': 'attack',
+                'event': weighted_choice(commandes),
                 'sourceCharacter': sourceChar,
                 'targetCharacter': targetChar,
                 'targetPlayer': opponentId

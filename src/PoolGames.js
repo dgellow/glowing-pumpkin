@@ -27,11 +27,8 @@ PoolGames.prototype.removeUser = function(user) {
             var u = _.find(game.players, function(player) {
                 return player.id === user.id;
             });
-            if(u) {
-                game.gameState.isRunning = false;
-                game.gameState.reason = 'A player leave the fight';
-                game.gameState.updateTimestamp = new Date().getTime();
-            }
+
+            if(u) { u.hasLeft = true; }
         });
 };
 
