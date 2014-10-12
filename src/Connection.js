@@ -1,6 +1,9 @@
 var _ = require('lodash');
 var uuid = require('node-uuid');
 
+var helpers = require('./helpers');
+var stringify = helpers.stringify;
+
 var Pool = require('./Pool');
 
 var allConnections = [];
@@ -27,6 +30,17 @@ Connection.getByUser = function(user) {
     });
     return _.first(result);
 };
+
+Connection.notifyUser = function(status, value, user) {
+    Connection.getByUser(user).socket.write(stringify({
+        status: status,
+        value: value
+    }));
+};
+
+Connection.notifySuccess = Connection.notifyUser.bind(this, 'success');
+
+Connection.notifyError = Connection.notifyUser.bind(this, 'error');
 
 Connection.prototype = Object.create(null);
 Connection.prototype.constructor = Connection;
