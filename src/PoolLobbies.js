@@ -52,11 +52,13 @@ PoolLobbies.prototype.push = function(lobby) {
 };
 
 PoolLobbies.prototype.getByUser = function(user) {
-    return _.chain(this.lobbies)
-        .find(function(lobby) {
-            return _.where(lobby, {id: user.id});
-        })
-        .value();
+    var result = _.find(this.lobbies, function(lobby) {
+        return !_.chain(lobby)
+            .where({id: user.id})
+            .isEmpty()
+            .value();
+    });
+    return result;
 };
 
 module.exports = PoolLobbies;
