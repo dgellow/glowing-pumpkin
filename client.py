@@ -5,7 +5,7 @@ import uuid
 import random
 
 playerId = uuid.uuid4().hex
-playerNames = ('Roger', 'Joséphine',
+playerNames = ('Roger', 'Josephine',
                'Gladys', 'Rita',
                'Robin', 'Connie',)
 
