@@ -26,11 +26,14 @@ PoolLobbies.prototype.remove = function(user) {
 };
 
 PoolLobbies.prototype.removeUser = function(user) {
-    _.each(this.lobbies, function(lobby) {
-        _.remove(lobby, function(player) {
-            return player.id === user.id;
+    _.chain(this.lobbies)
+        .each(function(lobby) {
+            var u = _.find(lobby, function(player) {
+                return player.id === user.id;
+            });
+
+            if (u) { u.hasLeft = true; }
         });
-    });
     return this.lobbies;
 };
 
