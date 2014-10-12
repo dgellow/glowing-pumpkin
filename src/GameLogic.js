@@ -148,16 +148,6 @@ function isTurnComplete(game) {
         .value();
 }
 
-function notify(player, value) {
-    var connection = Connection.getByUser(player);
-    if (connection) {
-        connection.socket.write(stringify({
-            status: 'success',
-            value: value
-        }));
-    }
-}
-
 function gameLogic(delay) {
     var poolGames = Pool.getByLabel('games');
 
@@ -171,7 +161,7 @@ function gameLogic(delay) {
             .each(function(game) {
                 var updateSequence = applyLogic(game);
                 _.each(game.players, function(player) {
-                    notify(player, updateSequence);
+                    Connection.notifySuccess(updateSequence, player);
                 });
                 updateGameState(game);
             });
