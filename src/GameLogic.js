@@ -92,6 +92,12 @@ function applyLogic(game) {
         .sortBy(function(p) { return -p.speed; })
         .map(resolve.bind(this, game))
         .flatten()
+        .reduce(function(acc, elem) {
+            if(_.isEmpty(acc) || _.last(acc).event !== 'escape') {
+                acc.push(elem);
+            }
+            return acc;
+        }, [])
         .value();
 }
 
