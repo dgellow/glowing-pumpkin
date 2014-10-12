@@ -25,7 +25,7 @@ function resolutionStep(sourcePlayer, sourceCharacter, targetPlayer,
     };
 }
 
-function resolve(game, sourcePlayer) {
+function attack(game, sourcePlayer) {
     var steps = [];
     var commande = sourcePlayer.commande;
 
@@ -36,8 +36,9 @@ function resolve(game, sourcePlayer) {
     var curriedStep = resolutionStep.bind(this,
                                           sourcePlayer, commande.sourceCharacter,
                                           targetPlayer, commande.targetCharacter);
-
-    if (sourcePlayer.hp <= 0) {
+    if (targetPlayer.hasLeft) {
+        steps.push(curriedStep('miss'));
+    } else if (sourcePlayer.hp <= 0) {
         // a dead character cannot do any action
         steps.push(resolutionStep(sourcePlayer, commande.sourceCharacter,
                                   sourcePlayer, commande.sourceCharacter,
@@ -57,6 +58,28 @@ function resolve(game, sourcePlayer) {
 
     } else {
         steps.push(curriedStep('miss'));
+    }
+
+    return steps;
+}
+
+function escape(sourcePlayer) {
+    var commande = sourcePlayer.commande;
+
+    sourcePlayer.hasLeft = true;
+    return resolutionStep(sourcePlayer, commande.sourceCharacter,
+                          sourcePlayer, commande.sourceCharacter,
+                         'escape');
+}
+
+function resolve(game, sourcePlayer) {
+    var steps = [];
+    var event = sourcePlayer.commande.event;
+
+    if (event === 'escape' || sourcePlayer.hasLeft) {
+        steps.push(escape(sourcePlayer));
+    } else if (event === 'attack') {
+        steps.push(_.flatten(attack(game, sourcePlayer)));
     }
 
     sourcePlayer.commande = null;
@@ -83,18 +106,32 @@ function setGameState(isRunning, reason, message, value) {
 function updateGameState(game) {
     var gameState = game.gameState;
     var gameNotRunning = setGameState.bind(gameState, false);
+    var winner = {};
+
+    var alivePlayers = _.filter(game.players, function(p) { return p.hp > 0; });
+    var connectedPlayers = _.filter(game.players, function(p) { return p.hasLeft !== true; });
+
+    if (!gameState.isRunning) {
+        return ;
+    }
 
     // if there is only one player alive
-    var alivePlayers = _.filter(game.players, function(p) { return p.hp > 0; });
-    if (alivePlayers.length === 1) {
-        var winner = _.first(alivePlayers);
+    else if (alivePlayers.length === 1) {
+        winner = _.first(alivePlayers);
         gameNotRunning('game_finished', 'The fight is finished. We have a winner.',
                        {winner: winner.id});
     }
 
     // if there is only one player connected
-    if (game.players.length <= 1) {
-        gameNotRunning('not_enough_players', 'There is not enough players to continue the fight');
+    else if (connectedPlayers.length === 1) {
+        winner = _.first(connectedPlayers);
+        gameNotRunning('other_players_left', 'Other players have left the fight.',
+                       {winner: winner.id});
+    }
+
+    // if there is no players connected
+    else if (connectedPlayers.length < 1) {
+        gameNotRunning('all_players_left', 'All players have left the fight.');
     }
 }
 
