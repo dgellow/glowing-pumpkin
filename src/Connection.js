@@ -31,16 +31,24 @@ Connection.getByUser = function(user) {
     return _.first(result);
 };
 
-Connection.notifyUser = function(status, value, user) {
-    Connection.getByUser(user).socket.write(stringify({
-        status: status,
-        value: value
-    }));
+Connection.notifyUser = function(status, obj, user, fn) {
+    var c = Connection.getByUser(user);
+    debugger;
+    if (c) {
+        c.socket.write(stringify(_.extend({ status: status }, obj )));
+    }
+    if (fn && (typeof fn === 'function')) {
+        fn(status, obj, user);
+    }
 };
 
-Connection.notifySuccess = Connection.notifyUser.bind(this, 'success');
+Connection.notifySuccess = function(v, user) {
+    Connection.notifyUser('success', { value: v }, user);
+};
 
-Connection.notifyError = Connection.notifyUser.bind(this, 'error');
+Connection.notifyError = function(m, user) {
+    Connection.notifyUser('error', { message: m }, user);
+};
 
 Connection.prototype = Object.create(null);
 Connection.prototype.constructor = Connection;
