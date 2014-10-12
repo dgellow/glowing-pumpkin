@@ -23,13 +23,6 @@ function convertToGame(lobby){
     };
 }
 
-function notifyInGame(game, player) {
-    Connection.getByUser(player).socket.write(stringify({
-        status: 'success',
-        value: game
-    }));
-}
-
 function moveToGame(delay) {
     var poolLobbies = Pool.getByLabel('lobbies');
     var poolGames = Pool.getByLabel('games');
@@ -42,7 +35,7 @@ function moveToGame(delay) {
             .map(convertToGame)
             .each(function(game){
                 poolGames.push(game);
-                curriedNotify = notifyInGame.bind(this, game);
+                curriedNotify = Connection.notifySuccess.bind(this, game);
                 _.each(game.players, curriedNotify);
             });
 

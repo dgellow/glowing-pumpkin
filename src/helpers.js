@@ -1,6 +1,8 @@
 var _ = require('lodash');
 var util = require('util');
 
+var Connection = require('./Connection');
+
 // Helper functions
 function log(str) {
     str = str || '';
@@ -44,12 +46,9 @@ function condHasAttr(connection, obj, attributes, fnTrue, fnFalse) {
         .value();
 
     if (!hasEveryAttr) {
-        connection.socket.write(stringify({
-            status: 'error',
-            message: 'Error: Received object has no ' +
-                util.inspect(attributes) +
-                ' attribute'
-        }) + '\r\n');
+        Connection.notifyError('Received object has no ' +
+            util.inspect(attributes) +
+            ' attribute', conn.user);
         if (typeof fnFalse === 'function') {
             return fnFalse(connection, obj, attributes);
         }
