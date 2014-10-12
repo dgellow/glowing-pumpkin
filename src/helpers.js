@@ -8,7 +8,7 @@ function log(str) {
 }
 
 function wrapText(str) {
-    return Date.now() + ': ' + str + '\r\n';
+    return new Date().toString() + ': ' + str + '\r\n';
 }
 
 function parse(data) {
