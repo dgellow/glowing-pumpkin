@@ -6,6 +6,7 @@ var wrapText = helpers.wrapText;
 var stringify = helpers.stringify;
 
 var User = require('./User');
+var Connection = require('./Connection');
 
 var actions = {
     'authenticate:user': handleAuthentication
@@ -27,7 +28,16 @@ function process(connection, data) {
 }
 
 function handleAuthentication(connection, data) {
-    doesUserExist(connection, data, authenticate, createUser);
+    // check if user is already connected
+    var connByUser = !Connection.getByUser(data.value);
+    if (connByUser) {
+        doesUserExist(connection, data, authenticate, createUser);
+    } else {
+        connection.socket.write(stringify({
+            status: 'error',
+            message: 'User already connected in another session'
+        }));
+    }
 }
 
 function doesUserExist(connection, data, fnTrue, fnFalse) {
