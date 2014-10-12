@@ -23,7 +23,7 @@ Connection.getById = function(id) {
 
 Connection.getByUser = function(user) {
     var result = _.filter(allConnections, function(c) {
-        return c.user.id == user.id;
+        return c.user && (c.user.id === user.id);
     });
     return _.first(result);
 };
