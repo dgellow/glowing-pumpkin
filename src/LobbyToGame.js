@@ -49,7 +49,7 @@ function notifySuccess(game, player) {
 }
 
 function notifyError(player) {
-    var error = {message: 'A player left the lobby'};
+    var error = {message: 'A player has left the lobby'};
     notifyInGame('error', player, error);
 
     // close user connection
