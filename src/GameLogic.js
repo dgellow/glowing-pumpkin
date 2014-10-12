@@ -139,12 +139,29 @@ function isGameRunning(game) {
     return game.gameState.isRunning;
 }
 
+function isPlayerValid(player) {
+    return player.commande;
+}
+
+function hasPlayerLeft(player) {
+    return player.hasLeft;
+}
+
 function isTurnComplete(game) {
     return _.chain(game.players)
         .map(function(player) {
-            return !!player.commande;
+            return isPlayerValid(player);
         })
         .every()
+        .value();
+}
+
+function hasGameLeaver(game) {
+    return _.chain(game.players)
+        .map(function(player) {
+            return hasPlayerLeft(player);
+        })
+        .any()
         .value();
 }
 
@@ -158,21 +175,34 @@ function notify(player, value) {
     }
 }
 
+function handleLeaverBeforeCommandeSelection(player) {
+    player.commande = {'event': 'escape'};
+}
+
 function gameLogic(delay) {
     var poolGames = Pool.getByLabel('games');
 
     return setInterval(function() {
         if (poolGames.games.length <= 0) { return; }
 
+        // if a player has left, handle the situation
+        _.chain(poolGames.games)
+            .filter(hasGameLeaver)
+            .each(function(game) {
+                _.each(game.players, handleLeaverBeforeCommandeSelection);
+            });
+
         // Get games awaiting a response
         _.chain(poolGames.games)
             .filter(isGameRunning)
-            .filter(isTurnComplete)
             .each(function(game) {
-                var updateSequence = applyLogic(game);
-                _.each(game.players, function(player) {
-                    notify(player, updateSequence);
-                });
+                if (isTurnComplete(game)) {
+                    var updateSequence = applyLogic(game);
+                    _.each(game.players, function(player) {
+                        notify(player, updateSequence);
+                    });
+                }
+
                 updateGameState(game);
             });
 
