@@ -43,8 +43,6 @@ function main(socket) {
 
         log('rawData: ' + rawData);
         log('Pools  : ' + util.inspect(Pool.getAll()));
-        log('Users  : ' + util.inspect(_.pluck(Connection.getAll(),
-                                              'user')));
     });
 
     socket.on('end', function() {

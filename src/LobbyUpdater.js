@@ -16,7 +16,10 @@ function setCharacters(conn, data) {
     var user = _.find(lobby, function(player) {
         return player.id === conn.user.id;
     });
-    user.characters = _.map(data.value.characters, Characters.getById);
+
+    if (user) {
+        user.characters = _.map(data.value.characters, Characters.getById);
+    }
 }
 
 module.exports = {
