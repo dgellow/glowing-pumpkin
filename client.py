@@ -5,6 +5,9 @@ import uuid
 import random
 
 playerId = uuid.uuid4().hex
+playerNames = ('Roger', 'Joséphine',
+               'Gladys', 'Rita',
+               'Robin', 'Connie',)
 
 color_red = '\033[91m'
 color_green = '\033[92m'
@@ -61,7 +64,7 @@ def authenticate():
     sendJson(sock, {
         'action': 'authenticate:user',
         'value': {'id': playerId,
-                  'name': 'roger'}
+                  'name': random.choice(playerNames)}
     })
 
     response = receiveJson(sock)
