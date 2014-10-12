@@ -33,7 +33,6 @@ Connection.getByUser = function(user) {
 
 Connection.notifyUser = function(status, obj, user, fn) {
     var c = Connection.getByUser(user);
-    debugger;
     if (c) {
         c.socket.write(stringify(_.extend({ status: status }, obj )));
     }
