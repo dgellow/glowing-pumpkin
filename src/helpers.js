@@ -50,7 +50,7 @@ function condHasAttr(connection, obj, attributes, fnTrue, fnFalse) {
             message: 'Error: Received object has no ' +
                 util.inspect(attributes) +
                 ' attribute'
-        }) + '\r\n');
+        }));
         if (typeof fnFalse === 'function') {
             return fnFalse(connection, obj, attributes);
         }
