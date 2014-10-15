@@ -41,12 +41,20 @@ Connection.notifyUser = function(status, obj, user, fn) {
     }
 };
 
-Connection.notifySuccess = function(v, user) {
+Connection.notifySuccess = function(v, user, cllbck) {
     Connection.notifyUser('success', { value: v }, user);
+
+    if (typeof cllbck === 'function') {
+        cllbck(user, v);
+    }
 };
 
-Connection.notifyError = function(m, user) {
+Connection.notifyError = function(m, user, cllbck) {
     Connection.notifyUser('error', { message: m }, user);
+
+    if (typeof cllbck === 'function') {
+        cllbck(user, m);
+    }
 };
 
 Connection.prototype = Object.create(null);

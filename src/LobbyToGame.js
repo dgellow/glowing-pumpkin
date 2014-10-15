@@ -34,6 +34,18 @@ function convertToGame(lobby){
     };
 }
 
+function handleLeaverInLobby(player) {
+    Connection.notifyError(
+        "A player has left the lobby",
+        player,
+        function() {
+            // close user connection
+            var connection = Connection.getByUser(player);
+            if (connection) { connection.close(); }
+        }
+    );
+}
+
 function moveToGame(delay) {
     var poolLobbies = Pool.getByLabel('lobbies');
     var poolGames = Pool.getByLabel('games');
@@ -45,7 +57,7 @@ function moveToGame(delay) {
         _.chain(poolLobbies.lobbies)
             .filter(hasLobbyLeaver)
             .each(function(lobby) {
-                _.each(lobby, notifyError);
+                _.each(lobby, handleLeaverInLobby);
             });
 
         // move lobbies to games
@@ -53,10 +65,11 @@ function moveToGame(delay) {
             .filter(isLobbyReady)
             .map(convertToGame)
             .each(function(game){
+                // move the game to poolGames
                 poolGames.push(game);
-                curriedNotify = Connection.notifySuccess.bind(this, game);
-
-                _.each(game.players, curriedNotify);
+                // send gamestate to users
+                _.each(game.players,
+                       Connection.notifySuccess.bind(this, game));
             });
 
     }, delay);
