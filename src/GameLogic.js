@@ -154,21 +154,15 @@ function hasPlayerLeft(player) {
 }
 
 function isTurnComplete(game) {
-    return _.chain(game.players)
-        .map(function(player) {
-            return isPlayerValid(player);
-        })
-        .every()
-        .value();
+    return _.reduce(game.players, function(acc, player) {
+        return acc && isPlayerValid(player);
+    }, true);
 }
 
 function hasGameLeaver(game) {
-    return _.chain(game.players)
-        .map(function(player) {
-            return hasPlayerLeft(player);
-        })
-        .any()
-        .value();
+    return _.reduce(game.players, function(acc, player) {
+        return acc || hasPlayerLeft(player);
+    }, false);
 }
 
 function notify(player, value) {
