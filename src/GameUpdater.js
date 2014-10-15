@@ -19,7 +19,7 @@ function gameStateByUser(user) {
 function getCurrentGamestate(conn, data) {
     var gameState = gameStateByUser(conn.user);
     if (gameState) {
-        Connection.notifySucces(gameState, conn.user);
+        Connection.notifySuccess(gameState, conn.user);
     } else {
         Connection.notifyError("GameState cannot be retrieved, either no game or wrong user", conn.user);
     }
