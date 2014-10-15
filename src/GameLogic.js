@@ -92,6 +92,12 @@ function applyLogic(game) {
         .sortBy(function(p) { return -p.speed; })
         .map(resolve.bind(this, game))
         .flatten()
+        .reduce(function(acc, elem) {
+            if(_.isEmpty(acc) || _.last(acc).event !== 'escape') {
+                acc.push(elem);
+            }
+            return acc;
+        }, [])
         .value();
 }
 
@@ -148,22 +154,16 @@ function hasPlayerLeft(player) {
 }
 
 function isTurnComplete(game) {
-    return _.chain(game.players)
-        .map(function(player) {
-            return isPlayerValid(player);
-        })
-        .every()
-        .value();
+    return _.reduce(game.players, function(acc, player) {
+        return acc && isPlayerValid(player);
+    }, true);
 }
 
 
 function hasGameLeaver(game) {
-    return _.chain(game.players)
-        .map(function(player) {
-            return hasPlayerLeft(player);
-        })
-        .any()
-        .value();
+    return _.reduce(game.players, function(acc, player) {
+        return acc || hasPlayerLeft(player);
+    }, false);
 }
 
 function handleLeaverBeforeCommandeSelection(player) {

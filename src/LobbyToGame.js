@@ -16,15 +16,15 @@ function hasPlayerLeft(player) {
 }
 
 function isLobbyReady(lobbyArray) {
-    return _.reduce(lobbyArray, function(e1, e2) {
-        return isPlayerValid(e1) && isPlayerValid(e2);
-    });
+    return _.reduce(lobbyArray, function(acc, val) {
+        return acc && isPlayerValid(val);
+    }, true);
 }
 
 function hasLobbyLeaver(lobbyArray) {
-    return _.reduce(lobbyArray, function(e1, e2) {
-        return hasPlayerLeft(e1) || hasPlayerLeft(e2);
-    });
+    return _.reduce(lobbyArray, function(acc, val) {
+        return acc || hasPlayerLeft(val);
+    }, false);
 }
 
 function convertToGame(lobby){
