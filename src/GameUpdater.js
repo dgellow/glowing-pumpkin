@@ -25,17 +25,18 @@ function notifySucces(user, value){
 
 function notifyFailure(user, message){
     Connection.getByUser(user).socket.write(stringify({
-        status: "Error",
+        status: "error",
         message: message
     }));
 }
 
 function getCurrentGamestate(conn, data) {
     var gameState = gameStateByUser(conn.user);
-    if(!!gameState) {
+    if (gameState) {
         notifySucces(conn.user, gameState);
     } else {
-        notifyFailure(conn.user, "gameState cannot be retreived, either no game or wrong user");
+        debugger;
+        notifyFailure(conn.user, "GameState cannot be retrieved, either no game or wrong user");
     }
 }
 
