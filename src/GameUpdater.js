@@ -21,7 +21,10 @@ function getCurrentGamestate(conn, data) {
     if (gameState) {
         Connection.notifySuccess(gameState, conn.user);
     } else {
-        Connection.notifyError("GameState cannot be retrieved, either no game or wrong user", conn.user);
+        Connection.notifyError(
+            "GameState cannot be retrieved, either no game or wrong user",
+            conn.user
+        );
     }
 }
 
