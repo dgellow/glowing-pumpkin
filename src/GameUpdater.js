@@ -16,26 +16,15 @@ function gameStateByUser(user) {
     return game ? game.gameState : null;
 }
 
-function notifySucces(user, value){
-    Connection.getByUser(user).socket.write(stringify({
-        status: "success",
-        value: value
-    }));
-}
-
-function notifyFailure(user, message){
-    Connection.getByUser(user).socket.write(stringify({
-        status: "error",
-        message: message
-    }));
-}
-
 function getCurrentGamestate(conn, data) {
     var gameState = gameStateByUser(conn.user);
     if (gameState) {
-        notifySucces(conn.user, gameState);
+        Connection.notifySuccess(gameState, conn.user);
     } else {
-        notifyFailure(conn.user, "GameState cannot be retrieved, either no game or wrong user");
+        Connection.notifyError(
+            "GameState cannot be retrieved, either no game or wrong user",
+            conn.user
+        );
     }
 }
 

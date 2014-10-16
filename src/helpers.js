@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var util = require('util');
 
+
 // Helper functions
 function log(str) {
     str = str || '';
@@ -29,7 +30,7 @@ function stringify(obj) {
         strData = JSON.stringify(obj);
     } catch(err) {
         log('!! Exception: ' + util.inspect(err));
-        strData = "";
+        strData = JSON.stringify({ status: 'error', message: 'server exception' });
     } finally {
         return strData;
     }
@@ -49,7 +50,7 @@ function condHasAttr(connection, obj, attributes, fnTrue, fnFalse) {
             message: 'Error: Received object has no ' +
                 util.inspect(attributes) +
                 ' attribute'
-        }) + '\r\n');
+        }));
         if (typeof fnFalse === 'function') {
             return fnFalse(connection, obj, attributes);
         }

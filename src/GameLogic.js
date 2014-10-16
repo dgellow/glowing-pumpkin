@@ -159,20 +159,11 @@ function isTurnComplete(game) {
     }, true);
 }
 
+
 function hasGameLeaver(game) {
     return _.reduce(game.players, function(acc, player) {
         return acc || hasPlayerLeft(player);
     }, false);
-}
-
-function notify(player, value) {
-    var connection = Connection.getByUser(player);
-    if (connection) {
-        connection.socket.write(stringify({
-            status: 'success',
-            value: value
-        }));
-    }
 }
 
 function handleLeaverBeforeCommandeSelection(player) {
@@ -196,13 +187,13 @@ function gameLogic(delay) {
         _.chain(poolGames.games)
             .filter(isGameRunning)
             .each(function(game) {
+
                 if (isTurnComplete(game)) {
                     var updateSequence = applyLogic(game);
                     _.each(game.players, function(player) {
-                        notify(player, updateSequence);
+                        Connection.notifySuccess(updateSequence, player);
                     });
                 }
-
                 updateGameState(game);
             });
 
